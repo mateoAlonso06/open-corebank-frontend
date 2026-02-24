@@ -1,0 +1,2612 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "CoreBank System API",
+        "description": "API for banking operations",
+        "contact": {
+            "name": "Banking Team",
+            "email": "dev@corebank"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Generated server url"
+        }
+    ],
+    "security": [
+        {
+            "Bearer Authentication": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "Transactions",
+            "description": "Operations for deposits, withdrawals, and transaction history"
+        },
+        {
+            "name": "Transfers",
+            "description": "Endpoints for money transfers between accounts"
+        },
+        {
+            "name": "Customers",
+            "description": "Customer management and KYC operations"
+        },
+        {
+            "name": "Accounts",
+            "description": "Bank account management operations"
+        },
+        {
+            "name": "Authentication",
+            "description": "User registration, login, and password management"
+        }
+    ],
+    "paths": {
+        "/api/v1/customers/{customerId}/kyc/reject": {
+            "put": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Reject customer KYC",
+                "description": "Rejects the KYC verification for a customer. Only accessible by ADMIN.",
+                "operationId": "rejectKyc",
+                "parameters": [
+                    {
+                        "name": "customerId",
+                        "in": "path",
+                        "description": "Customer ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "KYC rejected successfully"
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token"
+                    },
+                    "403": {
+                        "description": "Role not authorized for this operation"
+                    },
+                    "404": {
+                        "description": "Customer not found"
+                    },
+                    "422": {
+                        "description": "KYC already processed"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/customers/{customerId}/kyc/approve": {
+            "put": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Approve customer KYC",
+                "description": "Approves the KYC verification for a customer. Only accessible by ADMIN.",
+                "operationId": "approveKyc",
+                "parameters": [
+                    {
+                        "name": "customerId",
+                        "in": "path",
+                        "description": "Customer ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "KYC approved successfully"
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token"
+                    },
+                    "403": {
+                        "description": "Role not authorized for this operation"
+                    },
+                    "404": {
+                        "description": "Customer not found"
+                    },
+                    "422": {
+                        "description": "KYC already processed"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/customers/me": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Get my customer profile",
+                "description": "Retrieves the customer profile for the authenticated user.",
+                "operationId": "getProfileForUser",
+                "responses": {
+                    "200": {
+                        "description": "Customer profile retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Customer profile not found for this user",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Update my profile",
+                "description": "Updates the authenticated customer's personal data. All fields are optional; only provided fields are updated. Name changes (firstName + lastName) reset KYC status to PENDING.",
+                "operationId": "updateMyProfile",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CustomerUpdateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Customer updated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request data",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Customer not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/change-password": {
+            "put": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Change password",
+                "description": "Changes the password for the authenticated user. Requires current password verification.",
+                "operationId": "changePassword",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeUserPasswordRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "Password changed successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request data (validation failed)"
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token, or incorrect current password"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/2fa/toggle": {
+            "put": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Toggle two-factor authentication",
+                "description": "Enables or disables two-factor authentication for the authenticated user.",
+                "operationId": "toggleTwoFactor",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ToggleTwoFactorRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "2FA status updated successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TwoFactorStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request data (validation failed)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TwoFactorStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TwoFactorStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TwoFactorStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Cannot enable 2FA for inactive users",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TwoFactorStatusResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/transfers": {
+            "post": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Transfer money",
+                "description": "Transfers money from one account to another using the destination account's alias or account number. Exactly one of 'toAlias' or 'toAccountNumber' must be provided. Validates sufficient funds, active accounts, and currency compatibility.",
+                "operationId": "transfer",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransferMoneyRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transfer completed successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferReceipt"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request data (validation failed)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferReceipt"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferReceipt"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role not authorized for this operation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferReceipt"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Source or target account not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferReceipt"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Business rule violation (insufficient funds, inactive account, same account transfer, or currency mismatch)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferReceipt"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/transactions/accounts/{accountId}/withdrawals": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Withdraw money",
+                "description": "Withdraws money from the specified bank account. Validates sufficient funds, active account status, and KYC approval.",
+                "operationId": "withdrawMoney",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "Source account ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/WithdrawMoneyRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Withdrawal completed successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request data (validation failed)"
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token"
+                    },
+                    "403": {
+                        "description": "Account does not belong to the authenticated user"
+                    },
+                    "404": {
+                        "description": "Account or customer not found"
+                    },
+                    "422": {
+                        "description": "Business rule violation (insufficient funds, inactive account, KYC not approved, or currency mismatch)"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/transactions/accounts/{accountId}/deposits": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Create deposit",
+                "description": "Deposits money into the specified bank account. The authenticated user must be the account owner and have approved KYC status.",
+                "operationId": "createDeposit",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "Target account ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DepositMoneyRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Deposit completed successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request data (validation failed)"
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token"
+                    },
+                    "403": {
+                        "description": "Account does not belong to the authenticated user"
+                    },
+                    "404": {
+                        "description": "Account or customer not found"
+                    },
+                    "422": {
+                        "description": "Business rule violation (inactive account, KYC not approved, or currency mismatch)"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/verify-email": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Verify email",
+                "description": "Verifies a user's email address using the token sent during registration.",
+                "operationId": "verifyEmail",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyEmailRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Email verified successfully"
+                    },
+                    "422": {
+                        "description": "Invalid or expired verification token or user already verified"
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/resend-verification": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Resend verification email",
+                "description": "Resends the email verification link to the user's email address.",
+                "operationId": "resendVerification",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResendVerificationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Verification email resent"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "User is already verified"
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register new user",
+                "description": "Creates a new user account with email and password. Also creates associated customer profile.",
+                "operationId": "register",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterUserRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterResult"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request data (validation failed)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterResult"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Email already in use",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid data provided",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterResult"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User login",
+                "description": "Authenticates user with email and password. Returns JWT token on success.",
+                "operationId": "login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful, JWT token returned",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request data (validation failed)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    },
+                    "423": {
+                        "description": "User is blocked",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/2fa/verify": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Verify two-factor authentication code",
+                "description": "Verifies the 2FA code and returns JWT token on success. Use the session token received from login response.",
+                "operationId": "verifyTwoFactor",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyTwoFactorRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "2FA verification successful, JWT token returned",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request data (validation failed)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired code",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Maximum verification attempts exceeded",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResult"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounts": {
+            "post": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Create a new bank account",
+                "description": "Creates a new bank account for the authenticated user. Requires KYC approval. Only one USD account is allowed per customer.",
+                "operationId": "createAccount",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateAccountRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Account created successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role not authorized for this operation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "KYC not approved or USD account limit reached",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/transfers/{id}": {
+            "get": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Get transfer by ID",
+                "description": "Retrieves the details of any money transfer by its ID. Only accessible by ADMIN or authorized roles.",
+                "operationId": "getTransferById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Transfer ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transfer details retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role not authorized for this operation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transfer not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/transfers/{id}/me": {
+            "get": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Get my transfer by ID",
+                "description": "Retrieves the details of a specific money transfer by its ID. Only returns transfers where the authenticated user is the sender or recipient.",
+                "operationId": "getTransferByIdForCustomer",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Transfer ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transfer details retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Transfer does not belong to the authenticated user",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transfer not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransferResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/transactions/{transactionId}": {
+            "get": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Get my transaction by ID",
+                "description": "Retrieves the details of a specific transaction by its ID. Only returns transactions where the authenticated user is the account owner.",
+                "operationId": "getTransactionByIdForCustomer",
+                "parameters": [
+                    {
+                        "name": "transactionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction details retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Transaction does not belong to the authenticated user",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transaction not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Business rule violation (KYC not approved)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/transactions/me": {
+            "get": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Get transaction history for customer",
+                "description": "Retrieves the paginated transaction history only for the user.",
+                "operationId": "getAllTransactionsByCustomer",
+                "parameters": [
+                    {
+                        "name": "pageable",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Pageable"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction history retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Authenticated user not authorized to view these transactions",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Customer not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Business rule violation (KYC not approved)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/transactions/accounts/{accountId}": {
+            "get": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Get transaction history",
+                "description": "Retrieves the paginated transaction history for the specified account. Only the account owner can access this information.",
+                "operationId": "getAllTransactionsByAccount",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "Account ID to retrieve transactions from",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Zero-based page index (0..N)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "The size of the page to be returned",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction history retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Account does not belong to the authenticated user",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account or customer not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Business rule violation (KYC not approved)",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultTransactionResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/customers": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Get all customers",
+                "description": "Retrieves a paginated list of all customers. Only accessible by ADMIN or BRANCH_MANAGER.",
+                "operationId": "getAllCustomers",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Zero-based page index (0..N)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0,
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "size",
+                        "in": "query",
+                        "description": "The size of the page to be returned",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer list retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultCustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultCustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role not authorized for this operation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PagedResultCustomerResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/customers/{customerId}": {
+            "get": {
+                "tags": [
+                    "Customers"
+                ],
+                "summary": "Get customer by ID",
+                "description": "Retrieves a specific customer by their ID. Only accessible by ADMIN or BRANCH_MANAGER.",
+                "operationId": "getCustomerById",
+                "parameters": [
+                    {
+                        "name": "customerId",
+                        "in": "path",
+                        "description": "Customer ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role not authorized for this operation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Customer not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CustomerResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/auth/2fa/status": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get two-factor authentication status",
+                "description": "Returns whether 2FA is enabled for the authenticated user.",
+                "operationId": "getTwoFactorStatus",
+                "responses": {
+                    "200": {
+                        "description": "2FA status returned successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TwoFactorStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TwoFactorStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TwoFactorStatusResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Get account by ID",
+                "description": "Retrieves any bank account by ID. Only accessible by ADMIN or authorized roles.",
+                "operationId": "getAccountById",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "Account ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Role not authorized for this operation",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/types": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Get account types",
+                "description": "Retrieves the list of available bank account types.",
+                "operationId": "getAccountTypes",
+                "responses": {
+                    "200": {
+                        "description": "Account types retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "SAVINGS",
+                                            "CHECKING",
+                                            "INVESTMENT"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "SAVINGS",
+                                            "CHECKING",
+                                            "INVESTMENT"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/search": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Search account by alias",
+                "description": "Searches for a bank account by its alias. Returns public information only (alias, owner name, currency, account type).",
+                "operationId": "searchByAlias",
+                "parameters": [
+                    {
+                        "name": "alias",
+                        "in": "query",
+                        "description": "Account alias to search",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "happy.tree.42"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountPublicResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountPublicResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found for the given alias",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountPublicResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/me": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Get my accounts",
+                "description": "Retrieves all bank accounts for the authenticated user.",
+                "operationId": "getAllAccountByUserId",
+                "responses": {
+                    "200": {
+                        "description": "Accounts retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AccountResult"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AccountResult"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Customer profile not found for this user",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AccountResult"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/me/{accountId}": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Get my account by ID",
+                "description": "Retrieves a specific bank account by ID for the authenticated user. Only returns accounts owned by the user.",
+                "operationId": "getAccountByIdForCustomer",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "Account ID to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Account does not belong to the authenticated user",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/me/{accountId}/balance": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Get account balance",
+                "description": "Retrieves the balance of a specific account owned by the authenticated user.",
+                "operationId": "getAccountBalance",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "Account ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Balance retrieved successfully",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountBalanceResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid or expired JWT token",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountBalanceResult"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Account does not belong to the authenticated user",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountBalanceResult"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Account not found",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccountBalanceResult"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer Authentication": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CustomerUpdateRequest": {
+                "type": "object",
+                "properties": {
+                    "firstName": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 0
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 0
+                    },
+                    "phone": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "minLength": 0
+                    },
+                    "address": {
+                        "type": "string",
+                        "maxLength": 200,
+                        "minLength": 0
+                    },
+                    "city": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 0
+                    }
+                }
+            },
+            "CustomerResult": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "documentType": {
+                        "type": "string"
+                    },
+                    "documentNumber": {
+                        "type": "string"
+                    },
+                    "birthDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "customerSince": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "phone": {
+                        "type": "string"
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "city": {
+                        "type": "string"
+                    },
+                    "country": {
+                        "type": "string"
+                    }
+                }
+            },
+            "ChangeUserPasswordRequest": {
+                "type": "object",
+                "properties": {
+                    "oldPassword": {
+                        "type": "string"
+                    },
+                    "newPassword": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "newPassword",
+                    "oldPassword"
+                ]
+            },
+            "ToggleTwoFactorRequest": {
+                "type": "object",
+                "properties": {
+                    "enable": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "enable"
+                ]
+            },
+            "TwoFactorStatusResponse": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "TransferMoneyRequest": {
+                "type": "object",
+                "properties": {
+                    "fromAccountId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "toAlias": {
+                        "type": "string",
+                        "pattern": "^[a-z0-9._-]{6,20}$"
+                    },
+                    "toAccountNumber": {
+                        "type": "string",
+                        "pattern": "^\\d{22}$"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "minimum": 0.01
+                    },
+                    "currency": {
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 3
+                    },
+                    "feeAmount": {
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "feeCurrency": {
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 3
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "FOOD",
+                            "TRANSPORTATION",
+                            "ENTERTAINMENT",
+                            "SERVICES",
+                            "HEALTH",
+                            "EDUCATION",
+                            "SHOPPING",
+                            "RECHARGES",
+                            "TAXES",
+                            "OTHERS"
+                        ]
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 0
+                    },
+                    "idempotencyKey": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "amount",
+                    "currency",
+                    "fromAccountId",
+                    "idempotencyKey"
+                ]
+            },
+            "AccountInfo": {
+                "type": "object",
+                "properties": {
+                    "alias": {
+                        "type": "string"
+                    },
+                    "partialAccountNumber": {
+                        "type": "string"
+                    }
+                }
+            },
+            "TransferReceipt": {
+                "type": "object",
+                "properties": {
+                    "transferId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "referenceNumber": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "FOOD",
+                            "TRANSPORTATION",
+                            "ENTERTAINMENT",
+                            "SERVICES",
+                            "HEALTH",
+                            "EDUCATION",
+                            "SHOPPING",
+                            "RECHARGES",
+                            "TAXES",
+                            "OTHERS"
+                        ]
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "currency": {
+                        "type": "string"
+                    },
+                    "fee": {
+                        "type": "number"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "executedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/AccountInfo"
+                    },
+                    "destination": {
+                        "$ref": "#/components/schemas/AccountInfo"
+                    }
+                }
+            },
+            "WithdrawMoneyRequest": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "number"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 3
+                    },
+                    "idempotencyKey": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "amount",
+                    "currency",
+                    "idempotencyKey"
+                ]
+            },
+            "DepositMoneyRequest": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "number"
+                    },
+                    "currency": {
+                        "type": "string",
+                        "maxLength": 3,
+                        "minLength": 3
+                    },
+                    "idempotencyKey": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "amount",
+                    "currency",
+                    "idempotencyKey"
+                ]
+            },
+            "VerifyEmailRequest": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "token"
+                ]
+            },
+            "ResendVerificationRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "email"
+                ]
+            },
+            "RegisterUserRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string",
+                        "maxLength": 2147483647,
+                        "minLength": 8
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 0
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 0
+                    },
+                    "documentType": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "minLength": 0
+                    },
+                    "documentNumber": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "minLength": 0
+                    },
+                    "birthDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "maxLength": 20,
+                        "minLength": 0
+                    },
+                    "address": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "minLength": 0
+                    },
+                    "city": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "minLength": 0
+                    },
+                    "country": {
+                        "type": "string",
+                        "maxLength": 2,
+                        "minLength": 0
+                    }
+                },
+                "required": [
+                    "address",
+                    "birthDate",
+                    "city",
+                    "country",
+                    "documentNumber",
+                    "documentType",
+                    "email",
+                    "firstName",
+                    "lastName",
+                    "password",
+                    "phone"
+                ]
+            },
+            "RegisterResult": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "email": {
+                        "type": "string"
+                    }
+                }
+            },
+            "LoginRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string",
+                        "maxLength": 2147483647,
+                        "minLength": 8
+                    }
+                },
+                "required": [
+                    "email",
+                    "password"
+                ]
+            },
+            "LoginResult": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "string",
+                        "enum": [
+                            "CUSTOMER",
+                            "ADMIN",
+                            "BRANCH_MANAGER",
+                            "SUPPORT",
+                            "COMPLIANCE",
+                            "AUDITOR"
+                        ]
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "requiresTwoFactor": {
+                        "type": "boolean"
+                    },
+                    "twoFactorData": {
+                        "$ref": "#/components/schemas/TwoFactorRequiredResult"
+                    }
+                }
+            },
+            "TwoFactorRequiredResult": {
+                "type": "object",
+                "properties": {
+                    "sessionToken": {
+                        "type": "string"
+                    },
+                    "maskedEmail": {
+                        "type": "string"
+                    },
+                    "expirySeconds": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "VerifyTwoFactorRequest": {
+                "type": "object",
+                "properties": {
+                    "sessionToken": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string",
+                        "maxLength": 6,
+                        "minLength": 6,
+                        "pattern": "^[0-9]{6}$"
+                    }
+                },
+                "required": [
+                    "code",
+                    "sessionToken"
+                ]
+            },
+            "CreateAccountRequest": {
+                "type": "object",
+                "properties": {
+                    "accountType": {
+                        "type": "string",
+                        "enum": [
+                            "SAVINGS",
+                            "CHECKING",
+                            "INVESTMENT"
+                        ]
+                    },
+                    "currency": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accountType",
+                    "currency"
+                ]
+            },
+            "AccountResult": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "customerId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "accountNumber": {
+                        "type": "string"
+                    },
+                    "alias": {
+                        "type": "string"
+                    },
+                    "accountType": {
+                        "type": "string"
+                    },
+                    "currency": {
+                        "type": "string"
+                    },
+                    "balance": {
+                        "type": "number"
+                    },
+                    "availableBalance": {
+                        "type": "number"
+                    }
+                }
+            },
+            "TransferResult": {
+                "type": "object",
+                "properties": {
+                    "transferId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "sourceAccountId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "targetAccountId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "category": {
+                        "type": "string",
+                        "enum": [
+                            "FOOD",
+                            "TRANSPORTATION",
+                            "ENTERTAINMENT",
+                            "SERVICES",
+                            "HEALTH",
+                            "EDUCATION",
+                            "SHOPPING",
+                            "RECHARGES",
+                            "TAXES",
+                            "OTHERS"
+                        ]
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "creditTransactionId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "debitTransactionId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "feeTransactionId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "TransactionResult": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "accountId": {
+                        "type": "string"
+                    },
+                    "transactionType": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "amountFee": {
+                        "type": "number"
+                    },
+                    "currency": {
+                        "type": "string"
+                    },
+                    "balanceAfter": {
+                        "type": "number"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "referenceNumber": {
+                        "type": "string"
+                    },
+                    "executedAt": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Pageable": {
+                "type": "object",
+                "properties": {
+                    "page": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 1
+                    },
+                    "sort": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "PagedResultTransactionResult": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TransactionResult"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalElements": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "hasNext": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "PagedResultCustomerResult": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CustomerResult"
+                        }
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "totalElements": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "totalPages": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "hasNext": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "AccountPublicResult": {
+                "type": "object",
+                "properties": {
+                    "alias": {
+                        "type": "string"
+                    },
+                    "ownerName": {
+                        "type": "string"
+                    },
+                    "ownerDocumentNumber": {
+                        "type": "string"
+                    },
+                    "currency": {
+                        "type": "string"
+                    },
+                    "accountType": {
+                        "type": "string"
+                    }
+                }
+            },
+            "AccountBalanceResult": {
+                "type": "object",
+                "properties": {
+                    "accountId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "balance": {
+                        "type": "number"
+                    },
+                    "availableBalance": {
+                        "type": "number"
+                    },
+                    "currency": {
+                        "type": "string"
+                    },
+                    "lastUpdated": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "Bearer Authentication": {
+                "type": "http",
+                "description": "Enter JWT token",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

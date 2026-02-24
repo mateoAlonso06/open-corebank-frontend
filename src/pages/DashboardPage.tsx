@@ -237,6 +237,9 @@ const DashboardPage = () => {
             </div>
             <div className="insight-content">
               <span className="insight-title">Spending Limit</span>
+              <span className="insight-description">
+                You've used 85% of your monthly dining budget ($425/$500). Consider slowing down to stay on track.
+              </span>
             </div>
           </div>
         </div>
@@ -268,6 +271,10 @@ const DashboardPage = () => {
             <input type="text" placeholder="Enter amount" />
             <span className="currency">USD</span>
           </div>
+
+          <button className="send-money-btn">
+            Send Money
+          </button>
         </div>
       </div>
     </div>

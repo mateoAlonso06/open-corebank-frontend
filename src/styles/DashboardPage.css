@@ -500,6 +500,29 @@
   color: #2563eb;
 }
 
+/* Send Money Button */
+.send-money-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: #2563eb;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.2s ease;
+}
+
+.send-money-btn:hover {
+  background: #1d4ed8;
+}
+
+.send-money-btn:active {
+  transform: scale(0.98);
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .accounts-section {

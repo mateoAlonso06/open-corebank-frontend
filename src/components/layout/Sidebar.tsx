@@ -6,7 +6,7 @@ import {
   CreditCard, 
   TrendingUp, 
   User,
-  Shield
+  Landmark
 } from 'lucide-react'
 import './Sidebar.css'
 
@@ -25,7 +25,7 @@ const Sidebar = () => {
       <div className="sidebar-header">
         <div className="sidebar-logo">
           <div className="logo-icon">
-            <Shield size={20} />
+            <Landmark size={20} />
           </div>
           <div className="logo-info">
             <span className="logo-name">CoreBank</span>

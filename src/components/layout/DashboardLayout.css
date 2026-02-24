@@ -6,13 +6,16 @@
 
 .main-content {
   flex: 1;
-  margin-left: 220px;
+  margin-left: 260px;
   display: flex;
   flex-direction: column;
 }
 
 .page-content {
   flex: 1;
-  padding: 24px 32px;
+  padding: 24px 48px;
   overflow-y: auto;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
