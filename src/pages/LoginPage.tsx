@@ -20,7 +20,8 @@ const LoginPage = () => {
   // Login state
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [rememberMe, setRememberMe] = useState(false)
+  // TODO: enable when refresh tokens are implemented
+  // const [rememberMe, setRememberMe] = useState(false)
 
   // Signup state
   const [signupData, setSignupData] = useState<RegisterUserRequest>({
@@ -222,6 +223,7 @@ const LoginPage = () => {
                   </div>
                 </div>
 
+                {/* TODO: enable when refresh tokens are implemented
                 <div className="remember-me">
                   <label className="checkbox-wrapper">
                     <input
@@ -233,6 +235,7 @@ const LoginPage = () => {
                     <span>Remember me for 30 days</span>
                   </label>
                 </div>
+                */}
 
                 <button type="submit" className="submit-button" disabled={loading}>
                   {loading ? 'Signing in...' : 'Sign In to CoreBank'}
@@ -329,7 +332,6 @@ const LoginPage = () => {
                       >
                         <option value="DNI">DNI</option>
                         <option value="PASSPORT">Passport</option>
-                        <option value="CUIT">CUIT</option>
                       </select>
                     </div>
                   </div>

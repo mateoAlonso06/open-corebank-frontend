@@ -1,16 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Landmark, RefreshCw, ShieldCheck } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import * as customerService from '@/services/customerService'
 import '../styles/LoadingPage.css'
 
-interface LoadingPageProps {
-  userName?: string
-}
-
-const LoadingPage = ({ userName = 'Alexander' }: LoadingPageProps) => {
+const LoadingPage = () => {
   const navigate = useNavigate()
+  const auth = useAuth()
   const [progress, setProgress] = useState(0)
+  const [customerReady, setCustomerReady] = useState(false)
+  const fetchStarted = useRef(false)
 
+  // Fetch customer data on mount
+  useEffect(() => {
+    if (fetchStarted.current) return
+    fetchStarted.current = true
+
+    const fetchCustomer = async () => {
+      try {
+        const customer = await customerService.getMyCustomer()
+        auth.setCustomer(customer)
+        setCustomerReady(true)
+      } catch {
+        auth.logout()
+      }
+    }
+    fetchCustomer()
+  }, [auth])
+
+  // Progress bar animation
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress(prev => {
@@ -18,7 +37,6 @@ const LoadingPage = ({ userName = 'Alexander' }: LoadingPageProps) => {
           clearInterval(interval)
           return 100
         }
-        // Incremento variable para hacer más realista
         const increment = Math.random() * 15 + 5
         return Math.min(prev + increment, 100)
       })
@@ -27,14 +45,17 @@ const LoadingPage = ({ userName = 'Alexander' }: LoadingPageProps) => {
     return () => clearInterval(interval)
   }, [])
 
+  // Navigate only when both progress is complete AND customer data is loaded
   useEffect(() => {
-    if (progress >= 100) {
+    if (progress >= 100 && customerReady) {
       const timeout = setTimeout(() => {
         navigate('/dashboard')
       }, 500)
       return () => clearTimeout(timeout)
     }
-  }, [progress, navigate])
+  }, [progress, customerReady, navigate])
+
+  const displayName = auth.customer?.firstName ?? auth.user?.email ?? ''
 
   return (
     <div className="loading-page">
@@ -56,7 +77,7 @@ const LoadingPage = ({ userName = 'Alexander' }: LoadingPageProps) => {
         </div>
 
         {/* Welcome Message */}
-        <h1 className="loading-title">Welcome back, {userName}</h1>
+        <h1 className="loading-title">Welcome back, {displayName}</h1>
 
         {/* Status Message */}
         <div className="loading-status">
@@ -71,8 +92,8 @@ const LoadingPage = ({ userName = 'Alexander' }: LoadingPageProps) => {
             <span className="progress-percent">{Math.round(progress)}%</span>
           </div>
           <div className="progress-bar">
-            <div 
-              className="progress-fill" 
+            <div
+              className="progress-fill"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
