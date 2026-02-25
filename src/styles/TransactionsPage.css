@@ -1,0 +1,120 @@
+.transactions-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.transactions-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transactions-page .page-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.tx-page-subtitle {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* Filters */
+.tx-filters {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tx-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.tx-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.tx-filter-select {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  background: white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.tx-filter-select:focus {
+  border-color: #2563eb;
+}
+
+/* Table Card */
+.tx-table-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Pagination */
+.tx-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.tx-page-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tx-page-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.tx-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tx-page-info {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .tx-filters {
+    flex-direction: column;
+  }
+
+  .tx-filter-group {
+    min-width: unset;
+  }
+}

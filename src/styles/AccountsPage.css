@@ -1,0 +1,386 @@
+.accounts-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.accounts-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accounts-page-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Shared buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary.withdraw {
+  background: #dc2626;
+}
+
+.btn-primary.withdraw:hover {
+  background: #b91c1c;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: white;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+}
+
+/* Loading / Error / Empty */
+.accounts-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 64px 24px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.accounts-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 24px;
+  color: #ef4444;
+  text-align: center;
+}
+
+.accounts-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.accounts-empty .empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.accounts-empty h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.accounts-empty p {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  max-width: 300px;
+}
+
+/* Accounts Grid */
+.accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.account-card-full {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.account-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.account-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.account-card-type {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.account-card-number {
+  font-size: 12px;
+  color: #9ca3af;
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-card-alias {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.alias-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.alias-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.account-card-balances {
+  display: flex;
+  gap: 24px;
+}
+
+.balance-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.balance-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.balance-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.balance-value.available {
+  color: #22c55e;
+}
+
+.account-card-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.btn-action {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-action.deposit {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.btn-action.deposit:hover {
+  background: #d1fae5;
+}
+
+.btn-action.withdraw {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.btn-action.withdraw:hover {
+  background: #fee2e2;
+}
+
+.btn-action.details {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.btn-action.details:hover {
+  background: #dbeafe;
+}
+
+/* Modal form styles */
+.modal-card.compact {
+  max-width: 420px;
+  width: 90%;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-group select,
+.form-group input {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111827;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-error {
+  font-size: 13px;
+  color: #ef4444;
+  margin: 0;
+}
+
+.modal-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.money-modal-account {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 24px;
+  background: #f9fafb;
+  margin: 0 24px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.money-modal-label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.money-modal-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Spinner */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .accounts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-card-balances {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .account-card-actions {
+    flex-wrap: wrap;
+  }
+}

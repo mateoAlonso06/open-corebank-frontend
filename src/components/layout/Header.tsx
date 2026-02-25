@@ -1,16 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Bell, User, Settings, Shield, LogOut } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 import './Header.css'
 
-interface HeaderProps {
-  userName?: string
-}
-
-const Header = ({ userName = 'Alex' }: HeaderProps) => {
+const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
+  const { user, customer, logout } = useAuth()
+
+  const displayName = customer?.firstName ?? user?.email ?? 'User'
+  const displayEmail = user?.email ?? ''
+  const avatarSeed = customer ? `${customer.firstName}-${customer.lastName}` : displayName
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -28,10 +30,15 @@ const Header = ({ userName = 'Alex' }: HeaderProps) => {
     navigate(path)
   }
 
+  const handleSignOut = () => {
+    setIsDropdownOpen(false)
+    logout()
+  }
+
   return (
     <header className="header">
       <div className="header-left">
-        <h2 className="welcome-text">Welcome back, {userName}</h2>
+        <h2 className="welcome-text">Welcome back, {displayName}</h2>
       </div>
 
       <div className="header-right">
@@ -45,28 +52,28 @@ const Header = ({ userName = 'Alex' }: HeaderProps) => {
             <Bell size={20} />
             <span className="notification-badge"></span>
           </button>
-          
+
           <div className="user-menu" ref={dropdownRef}>
-            <button 
+            <button
               className="user-avatar-btn"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <img 
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" 
-                alt="User avatar" 
+              <img
+                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                alt="User avatar"
               />
             </button>
 
             {isDropdownOpen && (
               <div className="user-dropdown">
                 <div className="dropdown-header">
-                  <img 
-                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" 
-                    alt="User avatar" 
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                    alt="User avatar"
                   />
                   <div className="dropdown-user-info">
-                    <span className="dropdown-user-name">{userName}</span>
-                    <span className="dropdown-user-email">alex@corebank.com</span>
+                    <span className="dropdown-user-name">{displayName}</span>
+                    <span className="dropdown-user-email">{displayEmail}</span>
                   </div>
                 </div>
                 <div className="dropdown-divider"></div>
@@ -83,7 +90,7 @@ const Header = ({ userName = 'Alex' }: HeaderProps) => {
                   <span>Security</span>
                 </button>
                 <div className="dropdown-divider"></div>
-                <button className="dropdown-item logout" onClick={() => handleMenuClick('/login')}>
+                <button className="dropdown-item logout" onClick={handleSignOut}>
                   <LogOut size={16} />
                   <span>Sign Out</span>
                 </button>

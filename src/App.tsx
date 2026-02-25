@@ -6,8 +6,12 @@ import VerificationPage from './pages/VerificationPage'
 import LoadingPage from './pages/LoadingPage'
 import DashboardLayout from './components/layout/DashboardLayout'
 import DashboardPage from './pages/DashboardPage'
+import AccountsPage from './pages/AccountsPage'
+import TransfersPage from './pages/TransfersPage'
+import PaymentsPage from './pages/PaymentsPage'
 import ProfilePage from './pages/ProfilePage'
 import SecurityPage from './pages/SecurityPage'
+import TransactionsPage from './pages/TransactionsPage'
 
 function RootRedirect() {
   const { isAuthenticated } = useAuth()
@@ -27,10 +31,10 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/accounts" element={<DashboardPage />} />
-              <Route path="/transfers" element={<DashboardPage />} />
-              <Route path="/payments" element={<DashboardPage />} />
-              <Route path="/investments" element={<DashboardPage />} />
+              <Route path="/accounts" element={<AccountsPage />} />
+              <Route path="/transactions" element={<TransactionsPage />} />
+              <Route path="/transfers" element={<TransfersPage />} />
+              <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/profile/settings" element={<ProfilePage />} />
               <Route path="/profile/security" element={<SecurityPage />} />

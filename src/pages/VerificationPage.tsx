@@ -196,7 +196,7 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
         <header className="verification-header">
           <div className="header-logo">
             <Landmark size={24} />
-            <span>CoreBank</span>
+            <span>Open CoreBank</span>
           </div>
           <div className="header-secure">
             <Shield size={16} />
@@ -250,7 +250,7 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
             <span className="separator">&bull;</span>
             <span><Shield size={14} />PCI DSS COMPLIANT</span>
           </div>
-          <p>&copy; 2024 CoreBank Financial Services. All rights reserved.</p>
+          <p>&copy; 2024 Open CoreBank Financial Services. All rights reserved.</p>
         </footer>
       </div>
     )
@@ -263,7 +263,7 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
         <header className="verification-header">
           <div className="header-logo">
             <Landmark size={24} />
-            <span>CoreBank</span>
+            <span>Open CoreBank</span>
           </div>
           <div className="header-secure">
             <Shield size={16} />
@@ -332,7 +332,7 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
             <span className="separator">&bull;</span>
             <span><Shield size={14} />PCI DSS COMPLIANT</span>
           </div>
-          <p>&copy; 2024 CoreBank Financial Services. All rights reserved.</p>
+          <p>&copy; 2024 Open CoreBank Financial Services. All rights reserved.</p>
         </footer>
       </div>
     )
@@ -344,7 +344,7 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
       <header className="verification-header">
         <div className="header-logo">
           <Landmark size={24} />
-          <span>CoreBank</span>
+          <span>Open CoreBank</span>
         </div>
         <div className="header-secure">
           <Shield size={16} />
@@ -439,7 +439,7 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
           <span className="separator">&bull;</span>
           <span><Shield size={14} />PCI DSS COMPLIANT</span>
         </div>
-        <p>&copy; 2024 CoreBank Financial Services. All rights reserved.</p>
+        <p>&copy; 2024 Open CoreBank Financial Services. All rights reserved.</p>
       </footer>
     </div>
   )

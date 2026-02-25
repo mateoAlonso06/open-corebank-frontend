@@ -123,7 +123,7 @@ const LoginPage = () => {
             <div className="logo-icon">
               <Landmark size={24} />
             </div>
-            <span className="logo-text">CoreBank</span>
+            <span className="logo-text">Open CoreBank</span>
           </div>
 
           <h1 className="branding-title">
@@ -131,7 +131,7 @@ const LoginPage = () => {
           </h1>
 
           <p className="branding-description">
-            Join over 2 million customers worldwide who trust CoreBank for their personal and business financial growth. Secure, fast, and transparent.
+            Join over 2 million customers worldwide who trust Open CoreBank for their personal and business financial growth. Secure, fast, and transparent.
           </p>
 
           <div className="trust-badges">
@@ -238,7 +238,7 @@ const LoginPage = () => {
                 */}
 
                 <button type="submit" className="submit-button" disabled={loading}>
-                  {loading ? 'Signing in...' : 'Sign In to CoreBank'}
+                  {loading ? 'Signing in...' : 'Sign In to Open CoreBank'}
                   {!loading && <ArrowRight size={18} />}
                 </button>
               </form>
@@ -249,7 +249,7 @@ const LoginPage = () => {
               {/* Signup Header */}
               <div className="form-header">
                 <h2>Create Account</h2>
-                <p>Fill in your details to open a new CoreBank account.</p>
+                <p>Fill in your details to open a new Open CoreBank account.</p>
               </div>
 
               {/* Signup Form */}

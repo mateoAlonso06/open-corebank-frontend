@@ -103,7 +103,7 @@ const LoadingPage = () => {
         <div className="loading-security">
           <div className="security-badge">
             <ShieldCheck size={16} />
-            <span>Verified by CoreBank Security</span>
+            <span>Verified by Open CoreBank Security</span>
           </div>
           <p className="security-text">
             Your data is protected by industry-standard AES-256 encryption.

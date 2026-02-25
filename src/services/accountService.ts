@@ -1,0 +1,50 @@
+import api from './api';
+import type {
+  AccountResult,
+  AccountBalanceResult,
+  AccountPublicResult,
+  CreateAccountRequest,
+  DepositMoneyRequest,
+  WithdrawMoneyRequest,
+  TransactionResult,
+} from '@/types/api';
+
+export const accountService = {
+  getMyAccounts: async (): Promise<AccountResult[]> => {
+    const { data } = await api.get<AccountResult[]>('/accounts/me');
+    return data;
+  },
+
+  getAccountBalance: async (accountId: string): Promise<AccountBalanceResult> => {
+    const { data } = await api.get<AccountBalanceResult>(`/accounts/me/${accountId}/balance`);
+    return data;
+  },
+
+  searchByAlias: async (alias: string): Promise<AccountPublicResult> => {
+    const { data } = await api.get<AccountPublicResult>('/accounts/search', {
+      params: { alias },
+    });
+    return data;
+  },
+
+  createAccount: async (request: CreateAccountRequest): Promise<AccountResult> => {
+    const { data } = await api.post<AccountResult>('/accounts', request);
+    return data;
+  },
+
+  deposit: async (accountId: string, request: DepositMoneyRequest): Promise<TransactionResult> => {
+    const { data } = await api.post<TransactionResult>(
+      `/transactions/accounts/${accountId}/deposits`,
+      request,
+    );
+    return data;
+  },
+
+  withdraw: async (accountId: string, request: WithdrawMoneyRequest): Promise<TransactionResult> => {
+    const { data } = await api.post<TransactionResult>(
+      `/transactions/accounts/${accountId}/withdrawals`,
+      request,
+    );
+    return data;
+  },
+};

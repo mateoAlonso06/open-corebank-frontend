@@ -1,78 +1,33 @@
-import { 
-  Download, 
-  Wallet, 
-  PiggyBank, 
-  Filter, 
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  Download,
+  Wallet,
+  PiggyBank,
+  TrendingUp,
+  Filter,
   ArrowDownToLine,
-  ShoppingBag,
-  Building2,
-  Coffee,
   Target,
   AlertTriangle,
-  Plus
+  Plus,
+  Loader2,
+  CreditCard,
+  Receipt,
+  Eye,
+  EyeOff
 } from 'lucide-react'
+import { useAccounts } from '@/hooks/useAccounts'
+import { useTransactions } from '@/hooks/useTransactions'
+import { formatCurrency, formatDate, formatTime } from '@/utils/formatters'
+import AccountDetailModal from '@/components/shared/AccountDetailModal'
+import type { AccountResult, AccountType } from '@/types/api'
 import '../styles/DashboardPage.css'
 
-const accounts = [
-  {
-    type: 'Checking Account',
-    number: '**** 4291',
-    balance: '$5,240.50',
-    icon: Wallet,
-    color: '#2563eb',
-    actions: ['Transfer', 'Pay']
-  },
-  {
-    type: 'Savings Account',
-    number: '**** 8820',
-    balance: '$12,800.00',
-    icon: PiggyBank,
-    color: '#22c55e',
-    actions: ['Add Funds', 'Details']
-  }
-]
-
-const transactions = [
-  {
-    id: 1,
-    date: 'Oct 05, 2023',
-    time: '02:15 PM',
-    merchant: 'Amazon.com',
-    icon: ShoppingBag,
-    category: 'Shopping',
-    categoryColor: '#3b82f6',
-    status: 'Completed',
-    statusColor: '#22c55e',
-    amount: '-$45.00',
-    isNegative: true
-  },
-  {
-    id: 2,
-    date: 'Oct 04, 2023',
-    time: '09:00 AM',
-    merchant: 'Tech Corp Salary',
-    icon: Building2,
-    category: 'Income',
-    categoryColor: '#22c55e',
-    status: 'Completed',
-    statusColor: '#22c55e',
-    amount: '+$3,200.00',
-    isNegative: false
-  },
-  {
-    id: 3,
-    date: 'Oct 03, 2023',
-    time: '08:30 AM',
-    merchant: 'Starbucks',
-    icon: Coffee,
-    category: 'Food & Drink',
-    categoryColor: '#f97316',
-    status: 'Pending',
-    statusColor: '#eab308',
-    amount: '-$6.50',
-    isNegative: true
-  }
-]
+const accountTypeConfig: Record<AccountType, { label: string; icon: typeof Wallet; color: string; actions: string[] }> = {
+  CHECKING: { label: 'Checking Account', icon: Wallet, color: '#2563eb', actions: ['Transfer', 'Details'] },
+  SAVINGS: { label: 'Savings Account', icon: PiggyBank, color: '#22c55e', actions: ['Transfer', 'Details'] },
+  INVESTMENT: { label: 'Investment Account', icon: TrendingUp, color: '#8b5cf6', actions: ['Transfer', 'Details'] },
+}
 
 const spendingCategories = ['Shop', 'Bills', 'Food', 'Travel', 'Other']
 
@@ -82,7 +37,22 @@ const quickTransferContacts = [
   { name: 'Mike', avatar: 'Mike' }
 ]
 
+function getStatusColor(status: string): string {
+  switch (status.toUpperCase()) {
+    case 'COMPLETED': return '#22c55e';
+    case 'PENDING': return '#eab308';
+    case 'FAILED': return '#ef4444';
+    default: return '#6b7280';
+  }
+}
+
 const DashboardPage = () => {
+  const navigate = useNavigate()
+  const { accounts, isLoading: accountsLoading } = useAccounts()
+  const { transactions, isLoading: transactionsLoading } = useTransactions(0, 5)
+  const [selectedAccount, setSelectedAccount] = useState<AccountResult | null>(null)
+  const [hiddenBalances, setHiddenBalances] = useState<Set<string>>(new Set())
+
   return (
     <div className="dashboard-page">
       {/* Page Header */}
@@ -96,30 +66,88 @@ const DashboardPage = () => {
 
       {/* Account Cards & Spending */}
       <div className="accounts-section">
-        {accounts.map((account, index) => (
-          <div key={index} className="account-card">
-            <div className="account-header">
-              <div className="account-info">
-                <span className="account-type">{account.type}</span>
-                <span className="account-number">{account.number}</span>
-              </div>
-              <div className="account-icon" style={{ background: `${account.color}20` }}>
-                <account.icon size={20} style={{ color: account.color }} />
-              </div>
+        {accountsLoading ? (
+          <div className="account-card loading-card">
+            <Loader2 size={28} className="spinner" />
+            <span>Loading accounts...</span>
+          </div>
+        ) : accounts.length === 0 ? (
+          <div className="account-card empty-state-card">
+            <div className="empty-state-icon">
+              <CreditCard size={32} />
             </div>
-            <div className="account-balance">{account.balance}</div>
-            <div className="account-actions">
-              {account.actions.map((action, idx) => (
-                <button 
-                  key={idx} 
-                  className={`account-action-btn ${idx === 0 ? 'primary' : 'secondary'}`}
-                >
-                  {action}
-                </button>
-              ))}
+            <h3 className="empty-state-title">No accounts yet</h3>
+            <p className="empty-state-description">
+              Create your first bank account to start managing your finances.
+            </p>
+            <button className="empty-state-btn" onClick={() => navigate('/accounts')}>
+              <Plus size={16} />
+              Create Account
+            </button>
+          </div>
+        ) : (
+          accounts.map((account) => {
+            const config = accountTypeConfig[account.accountType];
+            const Icon = config.icon;
+            return (
+              <div key={account.id} className="account-card">
+                <div className="account-header">
+                  <div className="account-info">
+                    <span className="account-type">{config.label}</span>
+                    <span className="account-number">**** {account.accountNumber.slice(-4)}</span>
+                  </div>
+                  <div className="account-header-right">
+                    <button
+                      className="balance-toggle-btn"
+                      onClick={() => setHiddenBalances((prev) => {
+                        const next = new Set(prev)
+                        if (next.has(account.id)) next.delete(account.id)
+                        else next.add(account.id)
+                        return next
+                      })}
+                      aria-label={hiddenBalances.has(account.id) ? 'Show balance' : 'Hide balance'}
+                    >
+                      {hiddenBalances.has(account.id) ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                    <div className="account-icon" style={{ background: `${config.color}20` }}>
+                      <Icon size={20} style={{ color: config.color }} />
+                    </div>
+                  </div>
+                </div>
+                <div className="account-balance">
+                  {hiddenBalances.has(account.id) ? '******' : formatCurrency(account.balance, account.currency)}
+                </div>
+                <div className="account-actions">
+                  {config.actions.map((action, idx) => (
+                    <button
+                      key={idx}
+                      className={`account-action-btn ${idx === 0 ? 'primary' : 'secondary'}`}
+                      onClick={() => {
+                        if (action === 'Transfer') navigate('/transfers')
+                        if (action === 'Details') setSelectedAccount(account)
+                      }}
+                    >
+                      {action}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+        )}
+
+        {/* Create Account Quick Action */}
+        {!accountsLoading && accounts.length > 0 && (
+          <div className="account-card create-account-card" onClick={() => navigate('/accounts')}>
+            <div className="create-account-content">
+              <div className="create-account-icon">
+                <Plus size={24} />
+              </div>
+              <span className="create-account-label">Open New Account</span>
+              <span className="create-account-hint">Savings, Checking or Investment</span>
             </div>
           </div>
-        ))}
+        )}
 
         {/* Monthly Spending Card */}
         <div className="spending-card">
@@ -130,9 +158,9 @@ const DashboardPage = () => {
           <div className="spending-chart">
             {spendingCategories.map((category, idx) => (
               <div key={idx} className="chart-bar-container">
-                <div 
-                  className="chart-bar" 
-                  style={{ 
+                <div
+                  className="chart-bar"
+                  style={{
                     height: `${[60, 45, 75, 30, 50][idx]}%`,
                     background: ['#3b82f6', '#8b5cf6', '#f97316', '#22c55e', '#6b7280'][idx]
                   }}
@@ -168,49 +196,59 @@ const DashboardPage = () => {
           <div className="table-header">
             <span>DATE & TIME</span>
             <span>MERCHANT / DESCRIPTION</span>
-            <span>CATEGORY</span>
             <span>STATUS</span>
             <span>AMOUNT</span>
           </div>
-          
-          {transactions.map((tx) => (
-            <div key={tx.id} className="table-row">
-              <div className="tx-date">
-                <span className="date">{tx.date}</span>
-                <span className="time">{tx.time}</span>
-              </div>
-              <div className="tx-merchant">
-                <div className="merchant-icon">
-                  <tx.icon size={16} />
-                </div>
-                <span>{tx.merchant}</span>
-              </div>
-              <div className="tx-category">
-                <span 
-                  className="category-badge" 
-                  style={{ 
-                    background: `${tx.categoryColor}15`,
-                    color: tx.categoryColor
-                  }}
-                >
-                  {tx.category}
-                </span>
-              </div>
-              <div className="tx-status">
-                <span 
-                  className="status-indicator" 
-                  style={{ background: tx.statusColor }}
-                ></span>
-                <span>{tx.status}</span>
-              </div>
-              <div className={`tx-amount ${tx.isNegative ? 'negative' : 'positive'}`}>
-                {tx.amount}
-              </div>
+
+          {transactionsLoading ? (
+            <div className="transactions-empty-state">
+              <Loader2 size={24} className="spinner" />
+              <span className="empty-state-description">Loading transactions...</span>
             </div>
-          ))}
+          ) : transactions.length === 0 ? (
+            <div className="transactions-empty-state">
+              <div className="empty-state-icon small">
+                <Receipt size={24} />
+              </div>
+              <h4 className="empty-state-title">No transactions yet</h4>
+              <p className="empty-state-description">
+                Your recent transactions will appear here once you start using your accounts.
+              </p>
+            </div>
+          ) : (
+            transactions.map((tx) => {
+              const isNegative = ['TRANSFER_OUT', 'WITHDRAWAL', 'FEE', 'DEBIT'].includes(tx.transactionType);
+              const sign = isNegative ? '-' : '+';
+              const statusColor = getStatusColor(tx.status);
+
+              return (
+                <div key={tx.id} className="table-row">
+                  <div className="tx-date">
+                    <span className="date">{formatDate(tx.executedAt)}</span>
+                    <span className="time">{formatTime(tx.executedAt)}</span>
+                  </div>
+                  <div className="tx-merchant">
+                    <span>{tx.description}</span>
+                  </div>
+                  <div className="tx-status">
+                    <span
+                      className="status-indicator"
+                      style={{ background: statusColor }}
+                    ></span>
+                    <span>{tx.status}</span>
+                  </div>
+                  <div className={`tx-amount ${isNegative ? 'negative' : 'positive'}`}>
+                    {sign}{formatCurrency(tx.amount, tx.currency)}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
-        <button className="view-all-btn">View All Transactions</button>
+        <button className="view-all-btn" onClick={() => navigate('/transactions')}>
+          View All Transactions
+        </button>
       </div>
 
       {/* Bottom Section */}
@@ -218,7 +256,7 @@ const DashboardPage = () => {
         {/* Financial Insights */}
         <div className="insights-card">
           <h3>Financial Insights</h3>
-          
+
           <div className="insight-item">
             <div className="insight-icon savings">
               <Target size={18} />
@@ -247,7 +285,7 @@ const DashboardPage = () => {
         {/* Quick Transfer */}
         <div className="quick-transfer-card">
           <h3>Quick Transfer</h3>
-          
+
           <div className="transfer-contacts">
             <div className="contact add-new">
               <div className="contact-avatar">
@@ -257,7 +295,7 @@ const DashboardPage = () => {
             </div>
             {quickTransferContacts.map((contact, idx) => (
               <div key={idx} className="contact">
-                <img 
+                <img
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${contact.avatar}`}
                   alt={contact.name}
                   className="contact-avatar"
@@ -277,6 +315,12 @@ const DashboardPage = () => {
           </button>
         </div>
       </div>
+      {selectedAccount && (
+        <AccountDetailModal
+          account={selectedAccount}
+          onClose={() => setSelectedAccount(null)}
+        />
+      )}
     </div>
   )
 }

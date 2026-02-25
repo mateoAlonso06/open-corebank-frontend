@@ -1,10 +1,9 @@
-import { NavLink } from 'react-router-dom'
-import { 
-  LayoutDashboard, 
-  Wallet, 
-  ArrowLeftRight, 
-  CreditCard, 
-  TrendingUp, 
+import { NavLink, useNavigate } from 'react-router-dom'
+import {
+  LayoutDashboard,
+  Wallet,
+  ArrowLeftRight,
+  CreditCard,
   User,
   Landmark
 } from 'lucide-react'
@@ -15,20 +14,21 @@ const navItems = [
   { icon: Wallet, label: 'Accounts', path: '/accounts' },
   { icon: ArrowLeftRight, label: 'Transfers', path: '/transfers' },
   { icon: CreditCard, label: 'Payments', path: '/payments' },
-  { icon: TrendingUp, label: 'Investments', path: '/investments' },
   { icon: User, label: 'Profile', path: '/profile' },
 ]
 
 const Sidebar = () => {
+  const navigate = useNavigate()
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-logo">
+        <div className="sidebar-logo" onClick={() => navigate('/dashboard')} role="button" tabIndex={0}>
           <div className="logo-icon">
             <Landmark size={20} />
           </div>
           <div className="logo-info">
-            <span className="logo-name">CoreBank</span>
+            <span className="logo-name">Open CoreBank</span>
             <span className="logo-tagline">Secure Banking</span>
           </div>
         </div>

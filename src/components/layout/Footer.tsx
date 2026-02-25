@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="footer-brand">
             <div className="footer-logo">
               <Landmark size={24} />
-              <span>CoreBank</span>
+              <span>Open CoreBank</span>
             </div>
             <p className="footer-tagline">
               Managing your wealth with precision and care. Trusted by over 2 million customers worldwide.
@@ -66,7 +66,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; 2026 CoreBank. All rights reserved.</p>
+          <p>&copy; 2026 Open CoreBank. All rights reserved.</p>
           <div className="footer-badges">
             <span className="badge">FDIC Insured</span>
             <span className="badge">PCI DSS Compliant</span>
