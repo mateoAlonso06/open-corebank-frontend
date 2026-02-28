@@ -452,6 +452,14 @@
   background: #f9fafb;
 }
 
+.table-row.clickable {
+  cursor: pointer;
+}
+
+.table-row.clickable:hover {
+  background: #eff6ff;
+}
+
 .tx-date {
   display: flex;
   flex-direction: column;

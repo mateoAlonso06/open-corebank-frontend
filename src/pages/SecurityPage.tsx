@@ -1,33 +1,69 @@
-import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { 
-  User, 
-  Shield, 
-  Bell, 
-  Link2, 
-  LogOut,
-  ChevronRight
-} from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ChevronRight, Loader2 } from 'lucide-react'
+import { changePassword, get2FAStatus, toggle2FA } from '@/services/authService'
+import ProfileSidebar from '@/components/shared/ProfileSidebar'
 import '../styles/ProfilePage.css'
 import '../styles/SecurityPage.css'
 
 const SecurityPage = () => {
-  const navigate = useNavigate()
   const [passwords, setPasswords] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   })
+  const [passwordSaving, setPasswordSaving] = useState(false)
+  const [passwordFeedback, setPasswordFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
+  const [twoFactorLoading, setTwoFactorLoading] = useState(true)
+  const [twoFactorToggling, setTwoFactorToggling] = useState(false)
+
+  useEffect(() => {
+    get2FAStatus()
+      .then(res => setTwoFactorEnabled(res.enabled))
+      .catch(() => {})
+      .finally(() => setTwoFactorLoading(false))
+  }, [])
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setPasswords(prev => ({ ...prev, [name]: value }))
+    setPasswordFeedback(null)
   }
 
-  const handleUpdatePassword = (e: React.FormEvent) => {
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Updating password:', passwords)
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      setPasswordFeedback({ type: 'error', message: 'New passwords do not match.' })
+      return
+    }
+    if (!passwords.currentPassword || !passwords.newPassword) {
+      setPasswordFeedback({ type: 'error', message: 'Please fill in all password fields.' })
+      return
+    }
+    setPasswordSaving(true)
+    setPasswordFeedback(null)
+    try {
+      await changePassword({ oldPassword: passwords.currentPassword, newPassword: passwords.newPassword })
+      setPasswordFeedback({ type: 'success', message: 'Password updated successfully.' })
+      setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    } catch {
+      setPasswordFeedback({ type: 'error', message: 'Failed to change password. Please check your current password and try again.' })
+    } finally {
+      setPasswordSaving(false)
+    }
+  }
+
+  const handleToggle2FA = async (checked: boolean) => {
+    setTwoFactorToggling(true)
+    try {
+      await toggle2FA({ enable: checked })
+      setTwoFactorEnabled(checked)
+    } catch {
+      // revert on failure
+    } finally {
+      setTwoFactorToggling(false)
+    }
   }
 
   const handleDeactivateAccount = () => {
@@ -38,46 +74,9 @@ const SecurityPage = () => {
 
   return (
     <div className="profile-page">
-      {/* Profile Sidebar */}
-      <aside className="profile-sidebar">
-        <div className="profile-user-card">
-          <img 
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" 
-            alt="User avatar"
-            className="profile-avatar"
-          />
-          <h3 className="profile-name">John Doe</h3>
-          <span className="profile-member-type">Premium Member</span>
-        </div>
+      <ProfileSidebar />
 
-        <nav className="profile-nav">
-          <NavLink to="/profile" end className={({ isActive }) => `profile-nav-item ${isActive ? 'active' : ''}`}>
-            <User size={18} />
-            <span>Personal Info</span>
-          </NavLink>
-          <NavLink to="/profile/security" className={({ isActive }) => `profile-nav-item ${isActive ? 'active' : ''}`}>
-            <Shield size={18} />
-            <span>Security</span>
-          </NavLink>
-          <NavLink to="/profile/notifications" className={({ isActive }) => `profile-nav-item ${isActive ? 'active' : ''}`}>
-            <Bell size={18} />
-            <span>Notifications</span>
-          </NavLink>
-          <NavLink to="/profile/linked-accounts" className={({ isActive }) => `profile-nav-item ${isActive ? 'active' : ''}`}>
-            <Link2 size={18} />
-            <span>Linked Accounts</span>
-          </NavLink>
-        </nav>
-
-        <button className="profile-signout-btn" onClick={() => navigate('/login')}>
-          <LogOut size={18} />
-          <span>Sign Out</span>
-        </button>
-      </aside>
-
-      {/* Profile Content */}
       <div className="profile-content">
-        {/* Breadcrumb */}
         <div className="profile-breadcrumb">
           <span>Settings</span>
           <ChevronRight size={16} />
@@ -96,6 +95,12 @@ const SecurityPage = () => {
             <p className="subsection-description">
               Ensure your account is using a long, random password to stay secure.
             </p>
+
+            {passwordFeedback && (
+              <div className={`feedback-message feedback-${passwordFeedback.type}`}>
+                {passwordFeedback.message}
+              </div>
+            )}
 
             <form onSubmit={handleUpdatePassword} className="profile-form">
               <div className="form-group">
@@ -134,8 +139,9 @@ const SecurityPage = () => {
                 />
               </div>
 
-              <button type="submit" className="btn-save" style={{ alignSelf: 'flex-start' }}>
-                Update Password
+              <button type="submit" className="btn-save" style={{ alignSelf: 'flex-start' }} disabled={passwordSaving}>
+                {passwordSaving && <Loader2 size={16} className="spinner" />}
+                {passwordSaving ? 'Updating...' : 'Update Password'}
               </button>
             </form>
           </div>
@@ -148,14 +154,19 @@ const SecurityPage = () => {
               <h3>Two-Factor Authentication</h3>
               <p>Add an extra layer of security to your account.</p>
             </div>
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                checked={twoFactorEnabled}
-                onChange={(e) => setTwoFactorEnabled(e.target.checked)}
-              />
-              <span className="toggle-slider"></span>
-            </label>
+            {twoFactorLoading ? (
+              <Loader2 size={20} className="spinner" />
+            ) : (
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={twoFactorEnabled}
+                  disabled={twoFactorToggling}
+                  onChange={(e) => handleToggle2FA(e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            )}
           </div>
         </div>
 
@@ -170,11 +181,11 @@ const SecurityPage = () => {
             <div className="deactivate-info">
               <h3>Deactivate Account</h3>
               <p>
-                Once you deactivate your account, all your data will be permanently 
+                Once you deactivate your account, all your data will be permanently
                 removed. This action cannot be undone.
               </p>
             </div>
-            <button 
+            <button
               className="btn-deactivate"
               onClick={handleDeactivateAccount}
             >

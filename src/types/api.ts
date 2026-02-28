@@ -16,6 +16,7 @@ export interface LoginResult {
   email: string;
   role: 'CUSTOMER' | 'ADMIN' | 'BRANCH_MANAGER' | 'SUPPORT' | 'COMPLIANCE' | 'AUDITOR';
   token: string;
+  lastLoginAt: string | null;
   requiresTwoFactor: boolean;
   twoFactorData?: TwoFactorRequiredResult;
 }

@@ -200,6 +200,61 @@
   text-align: left;
 }
 
+/* Token Divider */
+.token-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.token-divider::before,
+.token-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.token-divider span {
+  font-size: 13px;
+  color: #9ca3af;
+  white-space: nowrap;
+}
+
+/* Manual Token Input */
+.manual-token-form {
+  margin-bottom: 24px;
+}
+
+.manual-token-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #111827;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.manual-token-input:focus {
+  border-color: #2563eb !important;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.manual-token-input::placeholder {
+  color: #9ca3af;
+}
+
+.manual-token-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Spinning animation */
 .spinning {
   animation: spin 1s linear infinite;

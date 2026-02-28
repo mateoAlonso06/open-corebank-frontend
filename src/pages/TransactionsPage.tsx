@@ -3,6 +3,7 @@ import { ArrowDownToLine, Filter, Loader2, Receipt, ChevronLeft, ChevronRight } 
 import { transactionService } from '@/services/transactionService'
 import { useAccounts } from '@/hooks/useAccounts'
 import { formatCurrency, formatDate, formatTime } from '@/utils/formatters'
+import TransactionDetailModal from '@/components/shared/TransactionDetailModal'
 import type { TransactionResult } from '@/types/api'
 import '../styles/TransactionsPage.css'
 
@@ -28,6 +29,7 @@ const TransactionsPage = () => {
   const [filterAccount, setFilterAccount] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [showFilters, setShowFilters] = useState(false)
+  const [selectedTxId, setSelectedTxId] = useState<string | null>(null)
 
   const fetchTransactions = useCallback(async (currentPage: number) => {
     setIsLoading(true)
@@ -148,7 +150,7 @@ const TransactionsPage = () => {
             const statusColor = getStatusColor(tx.status)
 
             return (
-              <div key={tx.id} className="table-row">
+              <div key={tx.id} className="table-row clickable" onClick={() => setSelectedTxId(tx.id)}>
                 <div className="tx-date">
                   <span className="date">{formatDate(tx.executedAt)}</span>
                   <span className="time">{formatTime(tx.executedAt)}</span>
@@ -191,6 +193,13 @@ const TransactionsPage = () => {
             <ChevronRight size={16} />
           </button>
         </div>
+      )}
+
+      {selectedTxId && (
+        <TransactionDetailModal
+          transactionId={selectedTxId}
+          onClose={() => setSelectedTxId(null)}
+        />
       )}
     </div>
   )

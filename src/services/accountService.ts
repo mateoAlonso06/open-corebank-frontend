@@ -3,6 +3,7 @@ import type {
   AccountResult,
   AccountBalanceResult,
   AccountPublicResult,
+  AccountType,
   CreateAccountRequest,
   DepositMoneyRequest,
   WithdrawMoneyRequest,
@@ -15,8 +16,18 @@ export const accountService = {
     return data;
   },
 
+  getAccountById: async (accountId: string): Promise<AccountResult> => {
+    const { data } = await api.get<AccountResult>(`/accounts/me/${accountId}`);
+    return data;
+  },
+
   getAccountBalance: async (accountId: string): Promise<AccountBalanceResult> => {
     const { data } = await api.get<AccountBalanceResult>(`/accounts/me/${accountId}/balance`);
+    return data;
+  },
+
+  getAccountTypes: async (): Promise<AccountType[]> => {
+    const { data } = await api.get<AccountType[]>('/accounts/types');
     return data;
   },
 

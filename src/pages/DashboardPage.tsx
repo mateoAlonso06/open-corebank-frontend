@@ -20,6 +20,7 @@ import { useAccounts } from '@/hooks/useAccounts'
 import { useTransactions } from '@/hooks/useTransactions'
 import { formatCurrency, formatDate, formatTime } from '@/utils/formatters'
 import AccountDetailModal from '@/components/shared/AccountDetailModal'
+import TransactionDetailModal from '@/components/shared/TransactionDetailModal'
 import type { AccountResult, AccountType } from '@/types/api'
 import '../styles/DashboardPage.css'
 
@@ -51,6 +52,7 @@ const DashboardPage = () => {
   const { accounts, isLoading: accountsLoading } = useAccounts()
   const { transactions, isLoading: transactionsLoading } = useTransactions(0, 5)
   const [selectedAccount, setSelectedAccount] = useState<AccountResult | null>(null)
+  const [selectedTxId, setSelectedTxId] = useState<string | null>(null)
   const [hiddenBalances, setHiddenBalances] = useState<Set<string>>(new Set())
 
   return (
@@ -222,7 +224,7 @@ const DashboardPage = () => {
               const statusColor = getStatusColor(tx.status);
 
               return (
-                <div key={tx.id} className="table-row">
+                <div key={tx.id} className="table-row clickable" onClick={() => setSelectedTxId(tx.id)}>
                   <div className="tx-date">
                     <span className="date">{formatDate(tx.executedAt)}</span>
                     <span className="time">{formatTime(tx.executedAt)}</span>
@@ -319,6 +321,12 @@ const DashboardPage = () => {
         <AccountDetailModal
           account={selectedAccount}
           onClose={() => setSelectedAccount(null)}
+        />
+      )}
+      {selectedTxId && (
+        <TransactionDetailModal
+          transactionId={selectedTxId}
+          onClose={() => setSelectedTxId(null)}
         />
       )}
     </div>

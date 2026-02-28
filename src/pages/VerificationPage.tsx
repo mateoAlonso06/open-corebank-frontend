@@ -33,6 +33,7 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
   const [emailVerifyStatus, setEmailVerifyStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [resendLoading, setResendLoading] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
+  const [manualToken, setManualToken] = useState('')
 
   // Extract state/params based on mode
   const twoFactorState = location.state as TwoFactorState | null
@@ -171,6 +172,13 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
     }
   }
 
+  const handleManualVerify = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmed = manualToken.trim()
+    if (!trimmed) return
+    await verifyEmailToken(trimmed)
+  }
+
   const handleResendVerification = async () => {
     if (!emailFromState || resendLoading) return
     setResendLoading(true)
@@ -273,56 +281,104 @@ const VerificationPage = ({ type = 'two-factor' }: VerificationPageProps) => {
 
         <main className="verification-main">
           <div className="verification-card">
-            <div className="verification-icon">
-              <Mail size={32} />
-            </div>
-
-            <h1>Check Your Email</h1>
-            <p className="verification-subtitle">We've sent a verification link to your email address.</p>
-
-            <div className="verification-message">
-              <div className="message-icon">
-                <Mail size={18} />
-              </div>
-              <p>
-                {emailFromState
-                  ? <>Please check <strong>{emailFromState}</strong> and click the verification link to activate your account.</>
-                  : 'Please check your inbox and click the verification link to activate your account.'
-                }
-              </p>
-            </div>
-
-            {error && (
-              <div className="verification-error">
-                <AlertCircle size={16} />
-                <span>{error}</span>
-              </div>
-            )}
-
-            {resendSuccess && (
-              <div className="verification-success">
-                <CheckCircle2 size={16} />
-                <span>Verification email resent successfully!</span>
-              </div>
-            )}
-
-            {emailFromState && (
-              <p className="resend-text">
-                Didn't receive the email?{' '}
-                <button
-                  type="button"
-                  className="resend-link"
-                  onClick={handleResendVerification}
-                  disabled={resendLoading}
-                >
-                  {resendLoading ? 'Sending...' : 'Resend Email'}
+            {emailVerifyStatus === 'success' ? (
+              <>
+                <div className="verification-icon" style={{ background: '#16a34a' }}>
+                  <CheckCircle2 size={32} />
+                </div>
+                <h1>Email Verified!</h1>
+                <p className="verification-subtitle">Your email has been successfully verified. You can now log in.</p>
+                <button className="verify-button" onClick={() => navigate('/login')}>
+                  Go to Login
+                  <ArrowRight size={18} />
                 </button>
-              </p>
-            )}
+              </>
+            ) : (
+              <>
+                <div className="verification-icon">
+                  <Mail size={32} />
+                </div>
 
-            <button className="back-link" onClick={() => navigate('/login')}>
-              Back to Login
-            </button>
+                <h1>Check Your Email</h1>
+                <p className="verification-subtitle">We've sent a verification link to your email address.</p>
+
+                <div className="verification-message">
+                  <div className="message-icon">
+                    <Mail size={18} />
+                  </div>
+                  <p>
+                    {emailFromState
+                      ? <>Please check <strong>{emailFromState}</strong> and click the verification link to activate your account.</>
+                      : 'Please check your inbox and click the verification link to activate your account.'
+                    }
+                  </p>
+                </div>
+
+                {error && (
+                  <div className="verification-error">
+                    <AlertCircle size={16} />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {resendSuccess && (
+                  <div className="verification-success">
+                    <CheckCircle2 size={16} />
+                    <span>Verification email resent successfully!</span>
+                  </div>
+                )}
+
+                <div className="token-divider">
+                  <span>Or enter your code manually</span>
+                </div>
+
+                <form onSubmit={handleManualVerify} className="manual-token-form">
+                  <input
+                    type="text"
+                    className="manual-token-input"
+                    placeholder="Paste your verification code here"
+                    value={manualToken}
+                    onChange={(e) => setManualToken(e.target.value)}
+                    disabled={emailVerifyStatus === 'loading'}
+                  />
+                  <button
+                    type="submit"
+                    className="verify-button"
+                    disabled={!manualToken.trim() || emailVerifyStatus === 'loading'}
+                  >
+                    {emailVerifyStatus === 'loading' ? (
+                      <>
+                        <Loader2 size={18} className="spinning" />
+                        Verifying...
+                      </>
+                    ) : (
+                      <>
+                        Verify Account
+                        <ArrowRight size={18} />
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {emailFromState && (
+                  <p className="resend-text">
+                    Didn't receive the email?{' '}
+                    <button
+                      type="button"
+                      className="resend-link"
+                      onClick={handleResendVerification}
+                      disabled={resendLoading}
+                    >
+                      {resendLoading ? 'Sending...' : 'Resend Email'}
+                    </button>
+                  </p>
+                )}
+
+                <button className="back-link" onClick={() => navigate('/login')}>
+                  Back to Login
+                </button>
+              </>
+            )}
           </div>
         </main>
 

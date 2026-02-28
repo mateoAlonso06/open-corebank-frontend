@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Plus,
   Wallet,
@@ -10,6 +10,7 @@ import {
   Eye,
   X,
 } from 'lucide-react'
+import { AxiosError } from 'axios'
 import { useAccounts } from '@/hooks/useAccounts'
 import { accountService } from '@/services/accountService'
 import { formatCurrency } from '@/utils/formatters'
@@ -152,10 +153,22 @@ const AccountsPage = () => {
 }
 
 function CreateAccountModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+  const [availableTypes, setAvailableTypes] = useState<AccountType[]>([])
+  const [typesLoading, setTypesLoading] = useState(true)
   const [accountType, setAccountType] = useState<AccountType>('CHECKING')
   const [currency, setCurrency] = useState('USD')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    accountService.getAccountTypes()
+      .then((types) => {
+        setAvailableTypes(types)
+        if (types.length > 0) setAccountType(types[0])
+      })
+      .catch(() => setAvailableTypes(['CHECKING', 'SAVINGS', 'INVESTMENT']))
+      .finally(() => setTypesLoading(false))
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -166,7 +179,12 @@ function CreateAccountModal({ onClose, onSuccess }: { onClose: () => void; onSuc
       await accountService.createAccount(request)
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create account')
+      if (err instanceof AxiosError && err.response?.status === 409) {
+        const typeLabel = accountTypeConfig[accountType].label
+        setError(`You already have a ${typeLabel} in ${currency}. Only one account per type and currency is allowed.`)
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to create account')
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -188,14 +206,19 @@ function CreateAccountModal({ onClose, onSuccess }: { onClose: () => void; onSuc
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
             <label htmlFor="accountType">Account Type</label>
-            <select
-              id="accountType"
-              value={accountType}
-              onChange={(e) => setAccountType(e.target.value as AccountType)}
-            >
-              <option value="CHECKING">Checking</option>
-              <option value="SAVINGS">Savings</option>
-            </select>
+            {typesLoading ? (
+              <div className="form-loading"><Loader2 size={16} className="spinner" /> Loading types...</div>
+            ) : (
+              <select
+                id="accountType"
+                value={accountType}
+                onChange={(e) => setAccountType(e.target.value as AccountType)}
+              >
+                {availableTypes.map((t) => (
+                  <option key={t} value={t}>{accountTypeConfig[t]?.label ?? t}</option>
+                ))}
+              </select>
+            )}
           </div>
           <div className="form-group">
             <label htmlFor="currency">Currency</label>

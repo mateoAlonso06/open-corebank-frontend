@@ -36,10 +36,7 @@ function App() {
               <Route path="/transfers" element={<TransfersPage />} />
               <Route path="/payments" element={<PaymentsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/profile/settings" element={<ProfilePage />} />
               <Route path="/profile/security" element={<SecurityPage />} />
-              <Route path="/profile/notifications" element={<ProfilePage />} />
-              <Route path="/profile/linked-accounts" element={<ProfilePage />} />
             </Route>
           </Route>
         </Routes>

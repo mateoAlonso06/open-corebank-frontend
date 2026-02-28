@@ -7,6 +7,9 @@ import type {
   VerifyTwoFactorRequest,
   VerifyEmailRequest,
   ResendVerificationRequest,
+  ChangeUserPasswordRequest,
+  TwoFactorStatusResponse,
+  ToggleTwoFactorRequest,
 } from '@/types/api';
 
 export async function login(data: LoginRequest): Promise<LoginResult> {
@@ -30,4 +33,26 @@ export async function verifyEmail(data: VerifyEmailRequest): Promise<void> {
 
 export async function resendVerification(data: ResendVerificationRequest): Promise<void> {
   await api.post('/auth/resend-verification', data);
+}
+
+export async function refreshAccessToken(): Promise<{ token: string }> {
+  const res = await api.post<{ token: string }>('/auth/refresh');
+  return res.data;
+}
+
+export async function logoutSession(): Promise<void> {
+  await api.post('/auth/logout');
+}
+
+export async function changePassword(data: ChangeUserPasswordRequest): Promise<void> {
+  await api.put('/auth/change-password', data);
+}
+
+export async function get2FAStatus(): Promise<TwoFactorStatusResponse> {
+  const res = await api.get<TwoFactorStatusResponse>('/auth/2fa/status');
+  return res.data;
+}
+
+export async function toggle2FA(data: ToggleTwoFactorRequest): Promise<void> {
+  await api.put('/auth/2fa/toggle', data);
 }

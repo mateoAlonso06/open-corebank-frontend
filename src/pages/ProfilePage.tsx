@@ -1,92 +1,77 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { 
-  User, 
-  Shield, 
-  Bell, 
-  Link2, 
-  LogOut,
-  ChevronRight,
-  CheckCircle,
-  Info
-} from 'lucide-react'
+import { ChevronRight, CheckCircle, Info, Loader2 } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { updateMyCustomer } from '@/services/customerService'
+import ProfileSidebar from '@/components/shared/ProfileSidebar'
 import '../styles/ProfilePage.css'
 
 const ProfilePage = () => {
+  const { customer, user, setCustomer } = useAuth()
+
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    address: '742 Evergreen Terrace',
-    city: 'Springfield',
-    postalCode: '62704'
+    firstName: customer?.firstName ?? '',
+    lastName: customer?.lastName ?? '',
+    phone: customer?.phone ?? '',
+    address: customer?.address ?? '',
+    city: customer?.city ?? '',
   })
+  const [saving, setSaving] = useState(false)
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    setFeedback(null)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Saving changes:', formData)
+    setSaving(true)
+    setFeedback(null)
+    try {
+      const updated = await updateMyCustomer(formData)
+      setCustomer(updated)
+      setFeedback({ type: 'success', message: 'Profile updated successfully.' })
+    } catch {
+      setFeedback({ type: 'error', message: 'Failed to update profile. Please try again.' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleCancel = () => {
+    setFormData({
+      firstName: customer?.firstName ?? '',
+      lastName: customer?.lastName ?? '',
+      phone: customer?.phone ?? '',
+      address: customer?.address ?? '',
+      city: customer?.city ?? '',
+    })
+    setFeedback(null)
   }
 
   return (
     <div className="profile-page">
-      {/* Profile Sidebar */}
-      <aside className="profile-sidebar">
-        <div className="profile-user-card">
-          <img 
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" 
-            alt="User avatar"
-            className="profile-avatar"
-          />
-          <h3 className="profile-name">John Doe</h3>
-          <span className="profile-member-type">Premium Member</span>
-        </div>
+      <ProfileSidebar />
 
-        <nav className="profile-nav">
-          <NavLink to="/profile" end className={({ isActive }) => `profile-nav-item ${isActive ? 'active' : ''}`}>
-            <User size={18} />
-            <span>Personal Info</span>
-          </NavLink>
-          <NavLink to="/profile/security" className={({ isActive }) => `profile-nav-item ${isActive ? 'active' : ''}`}>
-            <Shield size={18} />
-            <span>Security</span>
-          </NavLink>
-          <NavLink to="/profile/notifications" className={({ isActive }) => `profile-nav-item ${isActive ? 'active' : ''}`}>
-            <Bell size={18} />
-            <span>Notifications</span>
-          </NavLink>
-          <NavLink to="/profile/linked-accounts" className={({ isActive }) => `profile-nav-item ${isActive ? 'active' : ''}`}>
-            <Link2 size={18} />
-            <span>Linked Accounts</span>
-          </NavLink>
-        </nav>
-
-        <button className="profile-signout-btn">
-          <LogOut size={18} />
-          <span>Sign Out</span>
-        </button>
-      </aside>
-
-      {/* Profile Content */}
       <div className="profile-content">
-        {/* Breadcrumb */}
         <div className="profile-breadcrumb">
           <span>Settings</span>
           <ChevronRight size={16} />
           <span className="current">Edit Profile</span>
         </div>
 
-        {/* Form Section */}
         <div className="profile-form-section">
           <div className="section-header">
             <h1>Personal Information</h1>
             <p>Update your personal details and how we can reach you.</p>
           </div>
+
+          {feedback && (
+            <div className={`feedback-message feedback-${feedback.type}`}>
+              {feedback.message}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="profile-form">
             <div className="form-row">
@@ -124,8 +109,7 @@ const ProfilePage = () => {
                   type="email"
                   id="email"
                   name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
+                  value={user?.email ?? ''}
                   disabled
                   className="disabled"
                 />
@@ -153,37 +137,27 @@ const ProfilePage = () => {
               />
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="city">City</label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="postalCode">Postal Code</label>
-                <input
-                  type="text"
-                  id="postalCode"
-                  name="postalCode"
-                  value={formData.postalCode}
-                  onChange={handleInputChange}
-                />
-              </div>
+            <div className="form-group full-width">
+              <label htmlFor="city">City</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+              />
             </div>
 
             <div className="form-actions">
-              <button type="button" className="btn-cancel">Cancel</button>
-              <button type="submit" className="btn-save">Save Changes</button>
+              <button type="button" className="btn-cancel" onClick={handleCancel}>Cancel</button>
+              <button type="submit" className="btn-save" disabled={saving}>
+                {saving && <Loader2 size={16} className="spinner" />}
+                {saving ? 'Saving...' : 'Save Changes'}
+              </button>
             </div>
           </form>
         </div>
 
-        {/* Identity Verification Notice */}
         <div className="verification-notice">
           <div className="notice-icon">
             <Info size={20} />
@@ -191,7 +165,7 @@ const ProfilePage = () => {
           <div className="notice-content">
             <h4>Identity Verification</h4>
             <p>
-              Some sensitive information cannot be edited here for security reasons. To change your verified email or 
+              Some sensitive information cannot be edited here for security reasons. To change your verified email or
               primary banking identity, please visit a local branch or contact our support team.
             </p>
           </div>

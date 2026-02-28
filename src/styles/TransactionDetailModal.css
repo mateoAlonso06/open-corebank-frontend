@@ -1,0 +1,74 @@
+/* Transaction Detail Modal */
+.txd-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.txd-error {
+  text-align: center;
+  padding: 24px;
+  color: #ef4444;
+  font-size: 14px;
+}
+
+.txd-amount-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0;
+}
+
+.txd-amount {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.txd-amount.negative {
+  color: #ef4444;
+}
+
+.txd-amount.positive {
+  color: #22c55e;
+}
+
+.txd-type-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.txd-fee {
+  color: #ef4444;
+}
+
+.txd-mono {
+  font-family: monospace;
+  font-size: 13px;
+}
+
+/* Transfer section */
+.txd-transfer-section {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.txd-transfer-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0369a1;
+  margin-bottom: 12px;
+}

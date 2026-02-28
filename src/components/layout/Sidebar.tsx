@@ -7,6 +7,7 @@ import {
   User,
   Landmark
 } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 import './Sidebar.css'
 
 const navItems = [
@@ -17,8 +18,28 @@ const navItems = [
   { icon: User, label: 'Profile', path: '/profile' },
 ]
 
+function formatLastLogin(dateStr: string | null): string {
+  if (!dateStr) return '\u2014'
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '\u2014'
+
+  const now = new Date()
+  const isToday =
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate()
+
+  const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+
+  if (isToday) return `Today at ${time}`
+
+  const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return `${monthDay} at ${time}`
+}
+
 const Sidebar = () => {
   const navigate = useNavigate()
+  const { lastLoginAt } = useAuth()
 
   return (
     <aside className="sidebar">
@@ -50,7 +71,7 @@ const Sidebar = () => {
       <div className="sidebar-footer">
         <div className="last-login">
           <span className="last-login-label">Last Login</span>
-          <span className="last-login-time">Today at 09:42 AM</span>
+          <span className="last-login-time">{formatLastLogin(lastLoginAt)}</span>
         </div>
       </div>
     </aside>
