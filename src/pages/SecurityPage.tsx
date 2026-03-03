@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import axios from 'axios'
 import { ChevronRight, Loader2 } from 'lucide-react'
 import { changePassword, get2FAStatus, toggle2FA } from '@/services/authService'
 import ProfileSidebar from '@/components/shared/ProfileSidebar'
@@ -47,8 +48,9 @@ const SecurityPage = () => {
       await changePassword({ oldPassword: passwords.currentPassword, newPassword: passwords.newPassword })
       setPasswordFeedback({ type: 'success', message: 'Password updated successfully.' })
       setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' })
-    } catch {
-      setPasswordFeedback({ type: 'error', message: 'Failed to change password. Please check your current password and try again.' })
+    } catch (err) {
+      const backendMessage = axios.isAxiosError(err) ? err.response?.data?.message : undefined
+      setPasswordFeedback({ type: 'error', message: backendMessage ?? 'Failed to change password. Please check your current password and try again.' })
     } finally {
       setPasswordSaving(false)
     }

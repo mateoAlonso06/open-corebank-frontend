@@ -11,10 +11,6 @@ interface TransactionDetailModalProps {
   onClose: () => void
 }
 
-function isTransferType(type: string): boolean {
-  return ['TRANSFER_IN', 'TRANSFER_OUT'].includes(type)
-}
-
 function getStatusColor(status: string): string {
   switch (status.toUpperCase()) {
     case 'COMPLETED': return '#22c55e'
@@ -145,14 +141,6 @@ const TransactionDetailModal = ({ transactionId, onClose }: TransactionDetailMod
                 )}
               </div>
 
-              {/* Transfer indicator */}
-              {isTransferType(transaction.transactionType) && (
-                <div className="txd-transfer-section">
-                  <div className="txd-transfer-header">
-                    <span>{transaction.transactionType === 'TRANSFER_IN' ? 'Incoming transfer' : 'Outgoing transfer'} — see Transfer History for full details</span>
-                  </div>
-                </div>
-              )}
             </>
           ) : null}
         </div>

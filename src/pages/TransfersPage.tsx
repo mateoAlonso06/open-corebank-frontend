@@ -6,6 +6,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from 'lucide-react'
+import axios from 'axios'
 import { useAccounts } from '@/hooks/useAccounts'
 import { accountService } from '@/services/accountService'
 import { transferService } from '@/services/transferService'
@@ -119,8 +120,16 @@ const TransfersPage = () => {
       setSubmitError('Please enter a destination alias')
       return
     }
+    if (destMode === 'alias' && /^\d{10,}$/.test(destAlias.trim())) {
+      setSubmitError('It looks like you entered a CBU/account number. Switch to "By CBU" mode or enter a valid alias.')
+      return
+    }
     if (destMode === 'cbu' && !destCbu.trim()) {
       setSubmitError('Please enter a destination CBU')
+      return
+    }
+    if (destMode === 'cbu' && /[a-zA-Z]/.test(destCbu.trim())) {
+      setSubmitError('It looks like you entered an alias. Switch to "By Alias" mode or enter a valid CBU/account number.')
       return
     }
 
@@ -132,7 +141,7 @@ const TransfersPage = () => {
         amount: numAmount,
         currency,
         category,
-        description: description || undefined,
+        description: description || 'Transfer',
         idempotencyKey: crypto.randomUUID(),
       }
       if (destMode === 'alias') {
@@ -146,7 +155,8 @@ const TransfersPage = () => {
       fetchHistory(0)
       setHistoryPage(0)
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Transfer failed')
+      const backendMessage = axios.isAxiosError(err) ? err.response?.data?.message : undefined
+      setSubmitError(backendMessage ?? (err instanceof Error ? err.message : 'Transfer failed'))
     } finally {
       setIsSubmitting(false)
     }

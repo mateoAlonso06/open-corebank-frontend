@@ -25,4 +25,9 @@ export const transactionService = {
     );
     return data;
   },
+
+  getTransactionByReference: async (referenceNumber: string): Promise<TransactionResult> => {
+    const { data } = await api.get<TransactionResult>(`/transactions/reference/${referenceNumber}`);
+    return data;
+  },
 };

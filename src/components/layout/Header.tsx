@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Bell, User, Settings, Shield, LogOut } from 'lucide-react'
+import { User, Shield, LogOut } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import './Header.css'
 
@@ -42,17 +42,7 @@ const Header = () => {
       </div>
 
       <div className="header-right">
-        <div className="search-box">
-          <Search size={18} className="search-icon" />
-          <input type="text" placeholder="Search transactions..." />
-        </div>
-
         <div className="header-actions">
-          <button className="header-action-btn notification-btn">
-            <Bell size={20} />
-            <span className="notification-badge"></span>
-          </button>
-
           <div className="user-menu" ref={dropdownRef}>
             <button
               className="user-avatar-btn"
@@ -80,10 +70,6 @@ const Header = () => {
                 <button className="dropdown-item" onClick={() => handleMenuClick('/profile')}>
                   <User size={16} />
                   <span>My Profile</span>
-                </button>
-                <button className="dropdown-item" onClick={() => handleMenuClick('/profile/settings')}>
-                  <Settings size={16} />
-                  <span>Account Settings</span>
                 </button>
                 <button className="dropdown-item" onClick={() => handleMenuClick('/profile/security')}>
                   <Shield size={16} />

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ArrowDownToLine, Filter, Loader2, Receipt, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowDownToLine, Filter, Loader2, Receipt, ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import { transactionService } from '@/services/transactionService'
 import { useAccounts } from '@/hooks/useAccounts'
 import { formatCurrency, formatDate, formatTime } from '@/utils/formatters'
@@ -30,6 +30,25 @@ const TransactionsPage = () => {
   const [filterStatus, setFilterStatus] = useState('')
   const [showFilters, setShowFilters] = useState(false)
   const [selectedTxId, setSelectedTxId] = useState<string | null>(null)
+
+  const [searchRef, setSearchRef] = useState('')
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchError, setSearchError] = useState('')
+
+  const handleSearchByReference = async () => {
+    const trimmed = searchRef.trim()
+    if (!trimmed) return
+    setIsSearching(true)
+    setSearchError('')
+    try {
+      const tx = await transactionService.getTransactionByReference(trimmed)
+      setSelectedTxId(tx.id)
+    } catch {
+      setSearchError('No transaction found for that reference number.')
+    } finally {
+      setIsSearching(false)
+    }
+  }
 
   const fetchTransactions = useCallback(async (currentPage: number) => {
     setIsLoading(true)
@@ -83,6 +102,28 @@ const TransactionsPage = () => {
             Export
           </button>
         </div>
+      </div>
+
+      <div className="tx-search-bar">
+        <div className="tx-search-input-wrapper">
+          <Search size={16} className="tx-search-icon" />
+          <input
+            type="text"
+            className="tx-search-input"
+            placeholder="Search by reference number..."
+            value={searchRef}
+            onChange={(e) => { setSearchRef(e.target.value); setSearchError('') }}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleSearchByReference() }}
+          />
+          <button
+            className="tx-search-btn"
+            onClick={handleSearchByReference}
+            disabled={isSearching || !searchRef.trim()}
+          >
+            {isSearching ? <Loader2 size={14} className="spinner" /> : 'Search'}
+          </button>
+        </div>
+        {searchError && <span className="tx-search-error">{searchError}</span>}
       </div>
 
       {showFilters && (

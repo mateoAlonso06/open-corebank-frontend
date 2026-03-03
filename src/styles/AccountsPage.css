@@ -359,6 +359,160 @@
   color: #111827;
 }
 
+/* ─── Confirmation Step ─── */
+.money-confirm {
+  display: flex;
+  flex-direction: column;
+}
+
+.money-confirm-summary {
+  padding: 16px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.money-confirm-amount {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  padding: 16px 0;
+}
+
+.money-confirm-amount.deposit {
+  color: #059669;
+}
+
+.money-confirm-amount.withdraw {
+  color: #dc2626;
+}
+
+.money-confirm-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 10px;
+}
+
+.money-confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.money-confirm-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.money-confirm-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.money-mono {
+  font-family: monospace;
+}
+
+/* ─── Processing Step ─── */
+.money-processing {
+  padding: 32px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.money-processing-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.money-processing-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.money-processing-step.pending {
+  opacity: 0.35;
+}
+
+.money-processing-step.active {
+  background: #eff6ff;
+}
+
+.money-step-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.money-processing-step.done .money-step-icon {
+  color: #22c55e;
+}
+
+.money-processing-step.active .money-step-icon {
+  color: #2563eb;
+}
+
+.money-processing-step.pending .money-step-icon {
+  color: #9ca3af;
+}
+
+.money-step-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.money-processing-step.active .money-step-label {
+  color: #2563eb;
+}
+
+.money-processing-hint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+
+/* ─── Error Step ─── */
+.money-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 24px 0;
+}
+
+.money-error-icon {
+  color: #ef4444;
+}
+
+.money-error-icon.success {
+  color: #22c55e;
+}
+
+.money-error-message {
+  font-size: 14px;
+  color: #374151;
+  text-align: center;
+  margin: 0 0 8px 0;
+}
+
 /* Spinner */
 .spinner {
   animation: spin 1s linear infinite;

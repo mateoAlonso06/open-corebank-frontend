@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   Wallet,
+  Receipt,
   ArrowLeftRight,
   CreditCard,
   User,
@@ -13,6 +14,7 @@ import './Sidebar.css'
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: Wallet, label: 'Accounts', path: '/accounts' },
+  { icon: Receipt, label: 'Transactions', path: '/transactions' },
   { icon: ArrowLeftRight, label: 'Transfers', path: '/transfers' },
   { icon: CreditCard, label: 'Payments', path: '/payments' },
   { icon: User, label: 'Profile', path: '/profile' },
