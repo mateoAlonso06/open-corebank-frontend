@@ -9,12 +9,8 @@ function getAvatarStyle(): AvatarStyle {
   return (localStorage.getItem('avatarStyle') as AvatarStyle) || 'male'
 }
 
-function buildAvatarUrl(seed: string, style: AvatarStyle): string {
-  const base = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`
-  if (style === 'female') {
-    return `${base}&top=bigHair,bob,bun,curly,curvy,frida,longButNotTooLong,miaWallace,straight01,straight02,straightAndStrand&facialHairProbability=0`
-  }
-  return `${base}&top=shortFlat,shortRound,shortWaved,shortCurly,theCaesar,theCaesarAndSidePart,sides,shavedSides&facialHairProbability=30`
+function buildAvatarUrl(style: AvatarStyle): string {
+  return style === 'female' ? '/avatars/female.svg' : '/avatars/male.svg'
 }
 
 const ProfileSidebar = () => {
@@ -25,8 +21,6 @@ const ProfileSidebar = () => {
     ? `${customer.firstName} ${customer.lastName}`
     : user?.email ?? ''
 
-  const avatarSeed = user?.id ?? user?.email ?? 'default'
-
   const handleStyleChange = (style: AvatarStyle) => {
     localStorage.setItem('avatarStyle', style)
     setAvatarStyle(style)
@@ -36,7 +30,7 @@ const ProfileSidebar = () => {
     <aside className="profile-sidebar">
       <div className="profile-user-card">
         <img
-          src={buildAvatarUrl(avatarSeed, avatarStyle)}
+          src={buildAvatarUrl(avatarStyle)}
           alt="User avatar"
           className="profile-avatar"
         />

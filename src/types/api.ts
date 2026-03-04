@@ -225,6 +225,27 @@ export interface WithdrawMoneyRequest {
   idempotencyKey: string;
 }
 
+// ── Account Limits ────────────────────────────────────
+
+export interface LimitPeriod {
+  limit: number;
+  used: number;
+  remaining: number;
+}
+
+export interface AccountLimitsResult {
+  accountId: string;
+  accountType: AccountType;
+  deposit: {
+    daily: LimitPeriod;
+    monthly: LimitPeriod;
+  };
+  withdrawal: {
+    daily: LimitPeriod;
+    monthly: LimitPeriod;
+  };
+}
+
 // ── Pagination ───────────────────────────────────────
 
 export interface PagedResult<T> {

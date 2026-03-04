@@ -8,6 +8,7 @@ import type {
   DepositMoneyRequest,
   WithdrawMoneyRequest,
   MoneyOperationResult,
+  AccountLimitsResult,
 } from '@/types/api';
 
 export const accountService = {
@@ -56,6 +57,11 @@ export const accountService = {
       `/transactions/accounts/${accountId}/withdrawals`,
       request,
     );
+    return data;
+  },
+
+  getAccountLimits: async (accountId: string): Promise<AccountLimitsResult> => {
+    const { data } = await api.get<AccountLimitsResult>(`/accounts/me/${accountId}/limits`);
     return data;
   },
 };

@@ -1,14 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Download,
   Wallet,
   PiggyBank,
   TrendingUp,
-  Filter,
   ArrowDownToLine,
-  Target,
-  AlertTriangle,
+  ArrowUpFromLine,
+  ArrowLeftRight,
   Plus,
   Loader2,
   CreditCard,
@@ -18,10 +16,11 @@ import {
 } from 'lucide-react'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useTransactions } from '@/hooks/useTransactions'
+import { accountService } from '@/services/accountService'
 import { formatCurrency, formatDate, formatTime } from '@/utils/formatters'
 import AccountDetailModal from '@/components/shared/AccountDetailModal'
 import TransactionDetailModal from '@/components/shared/TransactionDetailModal'
-import type { AccountResult, AccountType } from '@/types/api'
+import type { AccountResult, AccountType, AccountLimitsResult } from '@/types/api'
 import '../styles/DashboardPage.css'
 
 const accountTypeConfig: Record<AccountType, { label: string; icon: typeof Wallet; color: string; actions: string[] }> = {
@@ -30,13 +29,13 @@ const accountTypeConfig: Record<AccountType, { label: string; icon: typeof Walle
   INVESTMENT: { label: 'Investment Account', icon: TrendingUp, color: '#8b5cf6', actions: ['Transfer', 'Details'] },
 }
 
-const spendingCategories = ['Shop', 'Bills', 'Food', 'Travel', 'Other']
-
-const quickTransferContacts = [
-  { name: 'John', avatar: 'John' },
-  { name: 'Sarah', avatar: 'Sarah' },
-  { name: 'Mike', avatar: 'Mike' }
-]
+function getLimitColor(used: number, limit: number): string {
+  if (limit === 0) return '#6b7280'
+  const pct = (used / limit) * 100
+  if (pct >= 85) return '#ef4444'
+  if (pct >= 60) return '#eab308'
+  return '#22c55e'
+}
 
 function getStatusColor(status: string): string {
   switch (status.toUpperCase()) {
@@ -54,16 +53,24 @@ const DashboardPage = () => {
   const [selectedAccount, setSelectedAccount] = useState<AccountResult | null>(null)
   const [selectedTxId, setSelectedTxId] = useState<string | null>(null)
   const [hiddenBalances, setHiddenBalances] = useState<Set<string>>(new Set())
+  const [accountLimits, setAccountLimits] = useState<AccountLimitsResult[]>([])
+  const [limitsLoading, setLimitsLoading] = useState(false)
+  const [limitsTab, setLimitsTab] = useState<'deposit' | 'withdrawal'>('withdrawal')
+
+  useEffect(() => {
+    if (accounts.length === 0) return
+    setLimitsLoading(true)
+    Promise.all(accounts.map((acc) => accountService.getAccountLimits(acc.id)))
+      .then(setAccountLimits)
+      .catch(() => setAccountLimits([]))
+      .finally(() => setLimitsLoading(false))
+  }, [accounts])
 
   return (
     <div className="dashboard-page">
       {/* Page Header */}
       <div className="page-header">
         <h1>Financial Dashboard</h1>
-        <button className="download-report-btn">
-          <Download size={16} />
-          Download Report
-        </button>
       </div>
 
       {/* Account Cards & Spending */}
@@ -151,47 +158,12 @@ const DashboardPage = () => {
           </div>
         )}
 
-        {/* Monthly Spending Card */}
-        <div className="spending-card">
-          <div className="spending-header">
-            <span className="spending-title">MONTHLY SPENDING</span>
-            <span className="spending-period">Oct 2023</span>
-          </div>
-          <div className="spending-chart">
-            {spendingCategories.map((category, idx) => (
-              <div key={idx} className="chart-bar-container">
-                <div
-                  className="chart-bar"
-                  style={{
-                    height: `${[60, 45, 75, 30, 50][idx]}%`,
-                    background: ['#3b82f6', '#8b5cf6', '#f97316', '#22c55e', '#6b7280'][idx]
-                  }}
-                ></div>
-                <span className="chart-label">{category}</span>
-              </div>
-            ))}
-          </div>
-          <div className="spending-total">
-            <span>Total Spent</span>
-            <span className="total-amount">$1,842.10</span>
-          </div>
-        </div>
       </div>
 
       {/* Recent Transactions */}
       <div className="transactions-section">
         <div className="section-header">
           <h2>Recent Transactions</h2>
-          <div className="section-actions">
-            <button className="filter-btn">
-              <Filter size={16} />
-              Filter
-            </button>
-            <button className="export-btn">
-              <ArrowDownToLine size={16} />
-              Export
-            </button>
-          </div>
         </div>
 
         <div className="transactions-table">
@@ -255,66 +227,114 @@ const DashboardPage = () => {
 
       {/* Bottom Section */}
       <div className="bottom-section">
-        {/* Financial Insights */}
+        {/* Spending Limits */}
         <div className="insights-card">
-          <h3>Financial Insights</h3>
-
-          <div className="insight-item">
-            <div className="insight-icon savings">
-              <Target size={18} />
-            </div>
-            <div className="insight-content">
-              <span className="insight-title">Savings Goal Alert</span>
-              <span className="insight-description">
-                You're only $200 away from your "New Car" goal this month. Keep it up!
-              </span>
-            </div>
-          </div>
-
-          <div className="insight-item">
-            <div className="insight-icon warning">
-              <AlertTriangle size={18} />
-            </div>
-            <div className="insight-content">
-              <span className="insight-title">Spending Limit</span>
-              <span className="insight-description">
-                You've used 85% of your monthly dining budget ($425/$500). Consider slowing down to stay on track.
-              </span>
+          <div className="limits-card-header">
+            <h3>Spending Limits</h3>
+            <div className="limits-tab-toggle">
+              <button
+                className={`limits-tab ${limitsTab === 'withdrawal' ? 'active' : ''}`}
+                onClick={() => setLimitsTab('withdrawal')}
+              >
+                Withdrawals
+              </button>
+              <button
+                className={`limits-tab ${limitsTab === 'deposit' ? 'active' : ''}`}
+                onClick={() => setLimitsTab('deposit')}
+              >
+                Deposits
+              </button>
             </div>
           </div>
+
+          {limitsLoading || accountsLoading ? (
+            <div className="limits-loading">
+              <Loader2 size={20} className="spinner" />
+            </div>
+          ) : accountLimits.length === 0 ? (
+            <p className="limits-empty">No limit data available.</p>
+          ) : (
+            <div className="limits-list">
+              {accountLimits.map((limits) => {
+                const account = accounts.find((a) => a.id === limits.accountId)
+                const currency = account?.currency ?? 'USD'
+                const accountNumber = account?.accountNumber ?? ''
+                const config = accountTypeConfig[limits.accountType]
+                const period = limits[limitsTab]
+                return (
+                  <div key={limits.accountId} className="limit-account-block">
+                    <div className="limit-account-label">
+                      <span>{config.label}</span>
+                      {accountNumber && (
+                        <span className="limit-account-num">*{accountNumber.slice(-4)}</span>
+                      )}
+                    </div>
+                    <div className="limit-bar-row">
+                      <span className="limit-period-label">Daily</span>
+                      <div className="limit-bar-track">
+                        <div
+                          className="limit-bar-fill"
+                          style={{
+                            width: `${Math.min((period.daily.used / period.daily.limit) * 100, 100)}%`,
+                            background: getLimitColor(period.daily.used, period.daily.limit),
+                          }}
+                        />
+                      </div>
+                      <span className="limit-bar-text">
+                        {formatCurrency(period.daily.used, currency)} / {formatCurrency(period.daily.limit, currency)}
+                      </span>
+                    </div>
+                    <div className="limit-bar-row">
+                      <span className="limit-period-label">Monthly</span>
+                      <div className="limit-bar-track">
+                        <div
+                          className="limit-bar-fill"
+                          style={{
+                            width: `${Math.min((period.monthly.used / period.monthly.limit) * 100, 100)}%`,
+                            background: getLimitColor(period.monthly.used, period.monthly.limit),
+                          }}
+                        />
+                      </div>
+                      <span className="limit-bar-text">
+                        {formatCurrency(period.monthly.used, currency)} / {formatCurrency(period.monthly.limit, currency)}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Quick Transfer */}
+        {/* Quick Actions */}
         <div className="quick-transfer-card">
-          <h3>Quick Transfer</h3>
-
-          <div className="transfer-contacts">
-            <div className="contact add-new">
-              <div className="contact-avatar">
-                <Plus size={20} />
+          <h3>Quick Actions</h3>
+          <div className="quick-actions-grid">
+            <button className="quick-action-btn" onClick={() => navigate('/transfers')}>
+              <div className="quick-action-icon transfer">
+                <ArrowLeftRight size={20} />
               </div>
-              <span>New</span>
-            </div>
-            {quickTransferContacts.map((contact, idx) => (
-              <div key={idx} className="contact">
-                <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${contact.avatar}`}
-                  alt={contact.name}
-                  className="contact-avatar"
-                />
-                <span>{contact.name}</span>
+              <span>New Transfer</span>
+            </button>
+            <button className="quick-action-btn" onClick={() => navigate('/accounts')}>
+              <div className="quick-action-icon deposit">
+                <ArrowDownToLine size={20} />
               </div>
-            ))}
+              <span>Deposit</span>
+            </button>
+            <button className="quick-action-btn" onClick={() => navigate('/accounts')}>
+              <div className="quick-action-icon withdraw">
+                <ArrowUpFromLine size={20} />
+              </div>
+              <span>Withdraw</span>
+            </button>
+            <button className="quick-action-btn" onClick={() => navigate('/accounts')}>
+              <div className="quick-action-icon accounts">
+                <Wallet size={20} />
+              </div>
+              <span>My Accounts</span>
+            </button>
           </div>
-
-          <div className="transfer-amount-input">
-            <input type="text" placeholder="Enter amount" />
-            <span className="currency">USD</span>
-          </div>
-
-          <button className="send-money-btn">
-            Send Money
-          </button>
         </div>
       </div>
       {selectedAccount && (

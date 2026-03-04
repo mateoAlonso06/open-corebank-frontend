@@ -65,6 +65,8 @@ const LoginPage = () => {
         const status = err.response?.status
         if (status === 401) {
           setError('Invalid email or password. Please try again.')
+        } else if (status === 403) {
+          setError(err.response?.data?.message ?? 'Your account has been deactivated. Please contact support.')
         } else if (status === 423) {
           setError('Your account has been locked. Please contact support.')
         } else {

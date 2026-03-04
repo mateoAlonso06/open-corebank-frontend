@@ -4,6 +4,13 @@ import { User, Shield, LogOut } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import './Header.css'
 
+type AvatarStyle = 'male' | 'female'
+
+function buildAvatarUrl(): string {
+  const style = (localStorage.getItem('avatarStyle') as AvatarStyle) || 'male'
+  return style === 'female' ? '/avatars/female.svg' : '/avatars/male.svg'
+}
+
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -12,7 +19,6 @@ const Header = () => {
 
   const displayName = customer?.firstName ?? user?.email ?? 'User'
   const displayEmail = user?.email ?? ''
-  const avatarSeed = customer ? `${customer.firstName}-${customer.lastName}` : displayName
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,7 +55,7 @@ const Header = () => {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <img
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                src={buildAvatarUrl()}
                 alt="User avatar"
               />
             </button>
@@ -58,7 +64,7 @@ const Header = () => {
               <div className="user-dropdown">
                 <div className="dropdown-header">
                   <img
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}`}
+                    src={buildAvatarUrl()}
                     alt="User avatar"
                   />
                   <div className="dropdown-user-info">

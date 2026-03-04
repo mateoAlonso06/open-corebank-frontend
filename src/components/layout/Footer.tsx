@@ -12,66 +12,61 @@ const Footer = () => {
               <span>Open CoreBank</span>
             </div>
             <p className="footer-tagline">
-              Managing your wealth with precision and care. Trusted by over 2 million customers worldwide.
+              A personal portfolio project simulating a modern homebanking experience.
+              Not a real financial institution — no real funds or data are involved.
             </p>
             <div className="footer-social">
-              <a href="#" className="social-link">Twitter</a>
-              <a href="#" className="social-link">LinkedIn</a>
-              <a href="#" className="social-link">Facebook</a>
+              <a
+                href="https://www.linkedin.com/in/mateoalonso20/"
+                className="social-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LinkedIn
+              </a>
             </div>
           </div>
 
           <div className="footer-links-section">
-            <h4>Products</h4>
+            <h4>Features</h4>
             <ul>
               <li><a href="#">Checking Accounts</a></li>
               <li><a href="#">Savings Accounts</a></li>
-              <li><a href="#">Credit Cards</a></li>
-              <li><a href="#">Loans</a></li>
-              <li><a href="#">Investments</a></li>
+              <li><a href="#">Investment Accounts</a></li>
+              <li><a href="#">Transfers</a></li>
             </ul>
           </div>
 
           <div className="footer-links-section">
-            <h4>Resources</h4>
+            <h4>Security</h4>
             <ul>
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Security</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">API Documentation</a></li>
-              <li><a href="#">Mobile App</a></li>
+              <li><a href="#">Two-Factor Auth</a></li>
+              <li><a href="#">Password Management</a></li>
+              <li><a href="#">Session Control</a></li>
+              <li><a href="#">Account Protection</a></li>
             </ul>
           </div>
 
           <div className="footer-links-section">
-            <h4>Company</h4>
+            <h4>Creator</h4>
             <ul>
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Press</a></li>
-              <li><a href="#">Contact</a></li>
-              <li><a href="#">Partners</a></li>
-            </ul>
-          </div>
-
-          <div className="footer-links-section">
-            <h4>Legal</h4>
-            <ul>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Cookie Policy</a></li>
-              <li><a href="#">Licenses</a></li>
+              <li>
+                <a
+                  href="https://www.linkedin.com/in/mateoalonso20/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Mateo Alonso
+                </a>
+              </li>
+              <li><a href="https://www.linkedin.com/in/mateoalonso20/" target="_blank" rel="noopener noreferrer">LinkedIn Profile</a></li>
             </ul>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; 2026 Open CoreBank. All rights reserved.</p>
-          <div className="footer-badges">
-            <span className="badge">FDIC Insured</span>
-            <span className="badge">PCI DSS Compliant</span>
-            <span className="badge">256-bit Encryption</span>
-          </div>
+          <p>&copy; 2026 Open CoreBank — Personal demo project by Mateo Alonso.</p>
+          <span className="demo-badge">Demo Project</span>
         </div>
       </div>
     </footer>
