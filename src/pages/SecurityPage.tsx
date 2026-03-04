@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { ChevronRight, Loader2 } from 'lucide-react'
-import { changePassword, get2FAStatus, toggle2FA } from '@/services/authService'
+import { ChevronRight, Loader2, X, AlertTriangle } from 'lucide-react'
+import { changePassword, get2FAStatus, toggle2FA, deactivateAccount } from '@/services/authService'
+import { useAuth } from '@/context/AuthContext'
 import ProfileSidebar from '@/components/shared/ProfileSidebar'
 import '../styles/ProfilePage.css'
 import '../styles/SecurityPage.css'
 
 const SecurityPage = () => {
+  const { logout } = useAuth()
   const [passwords, setPasswords] = useState({
     currentPassword: '',
     newPassword: '',
@@ -18,6 +20,11 @@ const SecurityPage = () => {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
   const [twoFactorLoading, setTwoFactorLoading] = useState(true)
   const [twoFactorToggling, setTwoFactorToggling] = useState(false)
+
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false)
+  const [deactivatePassword, setDeactivatePassword] = useState('')
+  const [deactivateLoading, setDeactivateLoading] = useState(false)
+  const [deactivateError, setDeactivateError] = useState<string | null>(null)
 
   useEffect(() => {
     get2FAStatus()
@@ -68,13 +75,32 @@ const SecurityPage = () => {
     }
   }
 
-  const handleDeactivateAccount = () => {
-    if (window.confirm('Are you sure you want to deactivate your account? This action cannot be undone.')) {
-      console.log('Account deactivation requested')
+  const handleDeactivateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!deactivatePassword) {
+      setDeactivateError('Please enter your password.')
+      return
+    }
+    setDeactivateLoading(true)
+    setDeactivateError(null)
+    try {
+      await deactivateAccount(deactivatePassword)
+      logout()
+    } catch (err) {
+      const backendMessage = axios.isAxiosError(err) ? err.response?.data?.message : undefined
+      setDeactivateError(backendMessage ?? 'Failed to deactivate account. Please try again.')
+      setDeactivateLoading(false)
     }
   }
 
+  const handleCloseDeactivateModal = () => {
+    setShowDeactivateModal(false)
+    setDeactivatePassword('')
+    setDeactivateError(null)
+  }
+
   return (
+    <>
     <div className="profile-page">
       <ProfileSidebar />
 
@@ -189,7 +215,7 @@ const SecurityPage = () => {
             </div>
             <button
               className="btn-deactivate"
-              onClick={handleDeactivateAccount}
+              onClick={() => setShowDeactivateModal(true)}
             >
               Deactivate Account
             </button>
@@ -197,6 +223,66 @@ const SecurityPage = () => {
         </div>
       </div>
     </div>
+
+    {showDeactivateModal && (
+
+      <div
+        className="deactivate-modal-overlay"
+        onClick={(e) => { if (e.target === e.currentTarget) handleCloseDeactivateModal() }}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="deactivate-modal-card">
+          <div className="deactivate-modal-header">
+            <div className="deactivate-modal-title">
+              <AlertTriangle size={20} className="deactivate-modal-icon" />
+              <h2>Deactivate Account</h2>
+            </div>
+            <button className="deactivate-modal-close" onClick={handleCloseDeactivateModal} aria-label="Close">
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="deactivate-modal-body">
+            <p className="deactivate-modal-warning">
+              This will permanently deactivate your account and all associated bank accounts.
+              You will no longer be able to log in. This action cannot be undone.
+            </p>
+            <p className="deactivate-modal-note">
+              Note: deactivation will be rejected if any of your bank accounts have a positive balance.
+            </p>
+
+            <form onSubmit={handleDeactivateSubmit}>
+              <div className="deactivate-form-group">
+                <label htmlFor="deactivatePassword">Confirm your password</label>
+                <input
+                  id="deactivatePassword"
+                  type="password"
+                  placeholder="••••••••"
+                  value={deactivatePassword}
+                  onChange={(e) => { setDeactivatePassword(e.target.value); setDeactivateError(null) }}
+                  autoFocus
+                />
+              </div>
+
+              {deactivateError && (
+                <p className="deactivate-error">{deactivateError}</p>
+              )}
+
+              <div className="deactivate-modal-actions">
+                <button type="button" className="btn-cancel" onClick={handleCloseDeactivateModal} disabled={deactivateLoading}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-deactivate-confirm" disabled={deactivateLoading}>
+                  {deactivateLoading ? <><Loader2 size={16} className="spinner" /> Deactivating...</> : 'Deactivate Account'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
 

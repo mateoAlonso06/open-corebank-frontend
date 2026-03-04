@@ -10,12 +10,14 @@ import axios from 'axios'
 import { useAccounts } from '@/hooks/useAccounts'
 import { accountService } from '@/services/accountService'
 import { transferService } from '@/services/transferService'
+import { transactionService } from '@/services/transactionService'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 import type {
   TransferMoneyRequest,
   TransferReceipt,
   TransferCategory,
   AccountPublicResult,
+  TransactionResult,
 } from '@/types/api'
 import '@/styles/TransfersPage.css'
 
@@ -54,7 +56,7 @@ const TransfersPage = () => {
   const [receipt, setReceipt] = useState<TransferReceipt | null>(null)
 
   // History state
-  const [transfers, setTransfers] = useState<TransferReceipt[]>([])
+  const [transfers, setTransfers] = useState<TransactionResult[]>([])
   const [historyPage, setHistoryPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [historyLoading, setHistoryLoading] = useState(true)
@@ -62,7 +64,7 @@ const TransfersPage = () => {
   const fetchHistory = useCallback(async (page: number) => {
     setHistoryLoading(true)
     try {
-      const result = await transferService.getMyTransfers(page, 10)
+      const result = await transactionService.getTransferTransactions(page, 10)
       setTransfers(result.items)
       setTotalPages(result.totalPages)
     } catch {
@@ -387,18 +389,16 @@ const TransfersPage = () => {
               <div className="history-table">
                 <div className="history-header">
                   <span>Date</span>
-                  <span>From</span>
-                  <span>To</span>
+                  <span>Description</span>
                   <span>Amount</span>
                   <span>Reference</span>
                 </div>
                 {transfers.map((t) => {
-                  const isOutgoing = accounts.some((a) => a.alias === t.source.alias)
+                  const isOutgoing = t.transactionType.toLowerCase().includes('debit')
                   return (
-                    <div key={t.transferId} className="history-row">
+                    <div key={t.id} className="history-row">
                       <span className="history-date">{formatDate(t.executedAt)}</span>
-                      <span className="history-account">{t.source.alias}</span>
-                      <span className="history-account">{t.destination.alias}</span>
+                      <span className="history-account">{t.description}</span>
                       <span className={`history-amount ${isOutgoing ? 'outgoing' : 'incoming'}`}>
                         {isOutgoing ? '-' : '+'}{formatCurrency(t.amount, t.currency)}
                       </span>

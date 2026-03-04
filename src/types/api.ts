@@ -199,6 +199,20 @@ export interface TransactionResult {
   status: string;
 }
 
+export interface MoneyOperationResult {
+  transactionId: string;
+  referenceNumber: string;
+  operationType: string;
+  amount: number;
+  currency: string;
+  balanceAfter: number;
+  accountNumber: string;
+  accountAlias: string;
+  description: string;
+  status: string;
+  executedAt: string;
+}
+
 export interface DepositMoneyRequest {
   amount: number;
   currency: string;

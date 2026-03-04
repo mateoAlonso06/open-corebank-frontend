@@ -56,3 +56,7 @@ export async function get2FAStatus(): Promise<TwoFactorStatusResponse> {
 export async function toggle2FA(data: ToggleTwoFactorRequest): Promise<void> {
   await api.put('/auth/2fa/toggle', data);
 }
+
+export async function deactivateAccount(password: string): Promise<void> {
+  await api.delete('/auth/account', { data: { password } });
+}

@@ -417,6 +417,23 @@
   font-family: monospace;
 }
 
+/* ─── Receipt Step ─── */
+.money-receipt-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 24px 0;
+}
+
+.money-receipt-status {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #059669;
+}
+
 /* ─── Processing Step ─── */
 .money-processing {
   padding: 32px 24px 24px;

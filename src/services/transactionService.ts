@@ -14,6 +14,13 @@ export const transactionService = {
     return data;
   },
 
+  getTransferTransactions: async (page: number, size: number): Promise<PagedResult<TransactionResult>> => {
+    const { data } = await api.get<PagedResult<TransactionResult>>('/transactions/me', {
+      params: { typeTransfer: true, page, size },
+    });
+    return data;
+  },
+
   getAccountTransactions: async (
     accountId: string,
     page: number,

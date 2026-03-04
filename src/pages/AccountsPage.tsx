@@ -18,9 +18,9 @@ import {
 import axios from 'axios'
 import { useAccounts } from '@/hooks/useAccounts'
 import { accountService } from '@/services/accountService'
-import { formatCurrency } from '@/utils/formatters'
+import { formatCurrency, formatDate, formatTime } from '@/utils/formatters'
 import AccountDetailModal from '@/components/shared/AccountDetailModal'
-import type { AccountResult, AccountType, CreateAccountRequest, TransactionResult } from '@/types/api'
+import type { AccountResult, AccountType, CreateAccountRequest, MoneyOperationResult } from '@/types/api'
 import '@/styles/AccountsPage.css'
 
 const accountTypeConfig: Record<AccountType, { label: string; icon: typeof Wallet; color: string }> = {
@@ -273,7 +273,7 @@ function MoneyOperationModal({
   const [amount, setAmount] = useState('')
   const [formError, setFormError] = useState<string | null>(null)
   const [processingStep, setProcessingStep] = useState(0)
-  const [receipt, setReceipt] = useState<TransactionResult | null>(null)
+  const [receipt, setReceipt] = useState<MoneyOperationResult | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const isDeposit = type === 'deposit'
   const numAmount = parseFloat(amount)
@@ -470,17 +470,46 @@ function MoneyOperationModal({
 
         {/* STEP: Receipt */}
         {step === 'receipt' && receipt && (
-          <div className="money-error">
-            <div className="money-error-icon success">
-              <CheckCircle size={48} />
+          <div className="money-confirm">
+            <div className="money-receipt-header">
+              <div className="money-error-icon success">
+                <CheckCircle size={36} />
+              </div>
+              <span className="money-receipt-status">{receipt.status}</span>
             </div>
-            <p className="money-error-message">
-              {isDeposit ? '+' : '-'}{formatCurrency(receipt.amount, receipt.currency)}
-            </p>
-            <p className="money-error-message" style={{ color: '#6b7280', fontSize: 13 }}>
-              Balance: {formatCurrency(receipt.balanceAfter, receipt.currency)}
-              {' · '}Ref: {receipt.referenceNumber}
-            </p>
+            <div className="money-confirm-summary">
+              <div className={`money-confirm-amount ${isDeposit ? 'deposit' : 'withdraw'}`}>
+                {isDeposit ? '+' : '-'}{formatCurrency(receipt.amount, receipt.currency)}
+              </div>
+              <div className="money-confirm-details">
+                <div className="money-confirm-row">
+                  <span className="money-confirm-label">Operation</span>
+                  <span className="money-confirm-value">{receipt.operationType}</span>
+                </div>
+                <div className="money-confirm-row">
+                  <span className="money-confirm-label">Account</span>
+                  <span className="money-confirm-value">{receipt.accountAlias} (*{receipt.accountNumber.slice(-4)})</span>
+                </div>
+                <div className="money-confirm-row">
+                  <span className="money-confirm-label">New Balance</span>
+                  <span className="money-confirm-value">{formatCurrency(receipt.balanceAfter, receipt.currency)}</span>
+                </div>
+                <div className="money-confirm-row">
+                  <span className="money-confirm-label">Reference</span>
+                  <span className="money-confirm-value money-mono">{receipt.referenceNumber}</span>
+                </div>
+                <div className="money-confirm-row">
+                  <span className="money-confirm-label">Date</span>
+                  <span className="money-confirm-value">{formatDate(receipt.executedAt)} {formatTime(receipt.executedAt)}</span>
+                </div>
+                {receipt.description && (
+                  <div className="money-confirm-row">
+                    <span className="money-confirm-label">Description</span>
+                    <span className="money-confirm-value">{receipt.description}</span>
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="modal-form-actions" style={{ padding: '0 24px 24px' }}>
               <button className="btn-primary" onClick={handleDone}>Done</button>
             </div>

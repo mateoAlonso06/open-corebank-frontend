@@ -7,7 +7,7 @@ import type {
   CreateAccountRequest,
   DepositMoneyRequest,
   WithdrawMoneyRequest,
-  TransactionResult,
+  MoneyOperationResult,
 } from '@/types/api';
 
 export const accountService = {
@@ -43,16 +43,16 @@ export const accountService = {
     return data;
   },
 
-  deposit: async (accountId: string, request: DepositMoneyRequest): Promise<TransactionResult> => {
-    const { data } = await api.post<TransactionResult>(
+  deposit: async (accountId: string, request: DepositMoneyRequest): Promise<MoneyOperationResult> => {
+    const { data } = await api.post<MoneyOperationResult>(
       `/transactions/accounts/${accountId}/deposits`,
       request,
     );
     return data;
   },
 
-  withdraw: async (accountId: string, request: WithdrawMoneyRequest): Promise<TransactionResult> => {
-    const { data } = await api.post<TransactionResult>(
+  withdraw: async (accountId: string, request: WithdrawMoneyRequest): Promise<MoneyOperationResult> => {
+    const { data } = await api.post<MoneyOperationResult>(
       `/transactions/accounts/${accountId}/withdrawals`,
       request,
     );
