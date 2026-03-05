@@ -101,13 +101,11 @@ const LoginPage = () => {
     } catch (err) {
       if (err instanceof AxiosError) {
         const errorCode = err.response?.data?.error
-        const status = err.response?.status
+        const backendMessage = err.response?.data?.message
         if (errorCode && REGISTER_ERROR_MESSAGES[errorCode]) {
           setError(REGISTER_ERROR_MESSAGES[errorCode])
-        } else if (status === 409) {
-          setError('An account with this email already exists.')
-        } else if (status === 422 || status === 400) {
-          setError('Please check your information and try again.')
+        } else if (backendMessage) {
+          setError(backendMessage)
         } else {
           setError('An unexpected error occurred. Please try again.')
         }
