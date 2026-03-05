@@ -95,11 +95,9 @@ const LoginPage = () => {
       navigate('/confirm-account', { state: { email: signupData.email } })
     } catch (err) {
       if (err instanceof AxiosError) {
-        const status = err.response?.status
-        if (status === 409) {
-          setError('An account with this email already exists.')
-        } else if (status === 422) {
-          setError('Please check your information and try again.')
+        const backendMessage = err.response?.data?.message
+        if (backendMessage) {
+          setError(backendMessage)
         } else {
           setError('An unexpected error occurred. Please try again.')
         }
