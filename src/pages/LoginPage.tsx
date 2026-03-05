@@ -7,6 +7,11 @@ import type { RegisterUserRequest } from '@/types/api'
 import { AxiosError } from 'axios'
 import '../styles/LoginPage.css'
 
+const REGISTER_ERROR_MESSAGES: Record<string, string> = {
+  DOCUMENT_NUMBER_ALREADY_IN_USE: 'The document number is already registered. Please check your details.',
+  EMAIL_ALREADY_IN_USE: 'An account with this email already exists.',
+}
+
 const LoginPage = () => {
   const navigate = useNavigate()
   const auth = useAuth()
@@ -95,9 +100,14 @@ const LoginPage = () => {
       navigate('/confirm-account', { state: { email: signupData.email } })
     } catch (err) {
       if (err instanceof AxiosError) {
-        const backendMessage = err.response?.data?.message
-        if (backendMessage) {
-          setError(backendMessage)
+        const errorCode = err.response?.data?.error
+        const status = err.response?.status
+        if (errorCode && REGISTER_ERROR_MESSAGES[errorCode]) {
+          setError(REGISTER_ERROR_MESSAGES[errorCode])
+        } else if (status === 409) {
+          setError('An account with this email already exists.')
+        } else if (status === 422 || status === 400) {
+          setError('Please check your information and try again.')
         } else {
           setError('An unexpected error occurred. Please try again.')
         }
