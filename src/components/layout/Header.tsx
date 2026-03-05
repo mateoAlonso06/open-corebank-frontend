@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, Shield, LogOut } from 'lucide-react'
+import { User, Shield, LogOut, Menu } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import './Header.css'
 
@@ -11,7 +11,11 @@ function buildAvatarUrl(): string {
   return style === 'female' ? '/avatars/female.svg' : '/avatars/male.svg'
 }
 
-const Header = () => {
+interface HeaderProps {
+  onMenuToggle: () => void
+}
+
+const Header = ({ onMenuToggle }: HeaderProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
@@ -44,6 +48,9 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-left">
+        <button className="mobile-menu-btn" onClick={onMenuToggle}>
+          <Menu size={24} />
+        </button>
         <h2 className="welcome-text">Welcome back, {displayName}</h2>
       </div>
 

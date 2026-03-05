@@ -19,3 +19,13 @@
   margin: 0 auto;
   width: 100%;
 }
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+
+  .page-content {
+    padding: 16px;
+  }
+}

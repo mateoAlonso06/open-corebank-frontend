@@ -10,6 +10,25 @@
 .header-left {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-btn:hover {
+  background: #f3f4f6;
 }
 
 .welcome-text {
@@ -191,4 +210,18 @@
 
 .dropdown-item.logout svg {
   color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .welcome-text {
+    font-size: 16px;
+  }
+
+  .header {
+    padding: 16px;
+  }
 }

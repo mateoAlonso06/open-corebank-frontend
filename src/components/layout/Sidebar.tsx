@@ -39,12 +39,19 @@ function formatLastLogin(dateStr: string | null): string {
   return `${monthDay} at ${time}`
 }
 
-const Sidebar = () => {
+interface SidebarProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const navigate = useNavigate()
   const { lastLoginAt } = useAuth()
 
   return (
-    <aside className="sidebar">
+    <>
+      {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
+      <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
       <div className="sidebar-header">
         <div className="sidebar-logo" onClick={() => navigate('/dashboard')} role="button" tabIndex={0}>
           <div className="logo-icon">
@@ -63,6 +70,7 @@ const Sidebar = () => {
             key={item.path}
             to={item.path}
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={onClose}
           >
             <item.icon size={20} />
             <span>{item.label}</span>
@@ -77,6 +85,7 @@ const Sidebar = () => {
         </div>
       </div>
     </aside>
+    </>
   )
 }
 

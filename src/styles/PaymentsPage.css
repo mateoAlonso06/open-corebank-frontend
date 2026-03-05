@@ -63,3 +63,9 @@
 .btn-back:hover {
   background: #1d4ed8;
 }
+
+@media (max-width: 480px) {
+  .coming-soon-card {
+    padding: 32px 20px;
+  }
+}
