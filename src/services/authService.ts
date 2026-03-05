@@ -10,6 +10,8 @@ import type {
   ChangeUserPasswordRequest,
   TwoFactorStatusResponse,
   ToggleTwoFactorRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
 } from '@/types/api';
 
 export async function login(data: LoginRequest): Promise<LoginResult> {
@@ -59,4 +61,12 @@ export async function toggle2FA(data: ToggleTwoFactorRequest): Promise<void> {
 
 export async function deactivateAccount(password: string): Promise<void> {
   await api.delete('/auth/account', { data: { password } });
+}
+
+export async function forgotPassword(data: ForgotPasswordRequest): Promise<void> {
+  await api.post('/auth/forgot-password', data);
+}
+
+export async function resetPassword(data: ResetPasswordRequest): Promise<void> {
+  await api.post('/auth/reset-password', data);
 }

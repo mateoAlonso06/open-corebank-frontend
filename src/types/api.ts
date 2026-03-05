@@ -62,6 +62,15 @@ export interface ToggleTwoFactorRequest {
   enable: boolean;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
 export interface TwoFactorStatusResponse {
   enabled: boolean;
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Lock, Eye, EyeOff, Landmark, ArrowRight, HelpCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import * as authService from '@/services/authService'
@@ -203,7 +203,7 @@ const LoginPage = () => {
                 <div className="form-group">
                   <div className="label-row">
                     <label htmlFor="password">Password</label>
-                    <a href="#" className="forgot-password">Forgot password?</a>
+                    <Link to="/forgot-password" className="forgot-password">Forgot password?</Link>
                   </div>
                   <div className="input-wrapper">
                     <input

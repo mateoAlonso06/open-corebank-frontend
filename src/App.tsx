@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import ProtectedRoute from '@/components/shared/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import VerificationPage from './pages/VerificationPage'
 import LoadingPage from './pages/LoadingPage'
 import DashboardLayout from './components/layout/DashboardLayout'
@@ -25,6 +27,8 @@ function App() {
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-2fa" element={<VerificationPage type="two-factor" />} />
           <Route path="/confirm-account" element={<VerificationPage type="account-confirmation" />} />
           <Route path="/loading" element={<LoadingPage />} />
