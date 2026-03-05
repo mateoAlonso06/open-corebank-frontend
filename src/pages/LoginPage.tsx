@@ -100,7 +100,7 @@ const LoginPage = () => {
       navigate('/confirm-account', { state: { email: signupData.email } })
     } catch (err) {
       if (err instanceof AxiosError) {
-        const errorCode = err.response?.data?.error
+        const errorCode = err.response?.data?.errorCode
         const backendMessage = err.response?.data?.message
         if (errorCode && REGISTER_ERROR_MESSAGES[errorCode]) {
           setError(REGISTER_ERROR_MESSAGES[errorCode])
