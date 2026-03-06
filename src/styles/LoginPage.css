@@ -360,6 +360,54 @@
   color: #374151;
 }
 
+/* Field Tooltip */
+.field-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  color: #9ca3af;
+  cursor: help;
+  vertical-align: middle;
+}
+
+.field-tooltip:hover {
+  color: #6b7280;
+}
+
+.field-tooltip-content {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #f9fafb;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+.field-tooltip-content::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1f2937;
+}
+
+.field-tooltip:hover .field-tooltip-content {
+  display: block;
+}
+
 /* Form Error */
 .form-error {
   background: #fef2f2;

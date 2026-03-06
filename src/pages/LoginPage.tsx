@@ -306,7 +306,21 @@ const LoginPage = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="signupPassword">Password</label>
+                  <label htmlFor="signupPassword">
+                    Password
+                    <span className="field-tooltip">
+                      <HelpCircle size={14} />
+                      <span className="field-tooltip-content">
+                        <strong>Password requirements:</strong>
+                        <br />8–128 characters
+                        <br />At least one uppercase letter (A-Z)
+                        <br />At least one lowercase letter (a-z)
+                        <br />At least one digit (0-9)
+                        <br />At least one special character (!@#$%...)
+                        <br />No spaces allowed
+                      </span>
+                    </span>
+                  </label>
                   <div className="input-wrapper">
                     <input
                       type={showSignupPassword ? 'text' : 'password'}
@@ -344,7 +358,18 @@ const LoginPage = () => {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="documentNumber">Document Number</label>
+                    <label htmlFor="documentNumber">
+                      Document Number
+                      <span className="field-tooltip">
+                        <HelpCircle size={14} />
+                        <span className="field-tooltip-content">
+                          <strong>DNI:</strong> 7 or 8 digits (e.g. 12345678)
+                          <br />
+                          <strong>Passport:</strong> 2-3 letters + 6-9 digits (e.g. AAB123456)
+                          <br />Only alphanumeric characters
+                        </span>
+                      </span>
+                    </label>
                     <div className="input-wrapper">
                       <input
                         type="text"
@@ -372,7 +397,18 @@ const LoginPage = () => {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label htmlFor="phone">Phone</label>
+                    <label htmlFor="phone">
+                      Phone
+                      <span className="field-tooltip">
+                        <HelpCircle size={14} />
+                        <span className="field-tooltip-content">
+                          <strong>Valid formats:</strong>
+                          <br />Mobile: +549 + 10 digits
+                          <br />Landline: +54 + 10 digits
+                          <br />Local: 8–13 digits
+                        </span>
+                      </span>
+                    </label>
                     <div className="input-wrapper">
                       <input
                         type="tel"
